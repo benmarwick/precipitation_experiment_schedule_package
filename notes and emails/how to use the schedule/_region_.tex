@@ -1,0 +1,71 @@
+\message{ !name(how.to.use.schedule.tex)}\documentclass[12pt]{article}
+
+
+\title{How to use the schedule file}
+
+\begin{document}
+
+\message{ !name(how.to.use.schedule.tex) !offset(-3) }
+
+
+\maketitle
+
+This is a quick guide to the precipitation experiment schedule
+file. Files will be named FIELDSITEschedule.csv, where FIELDSITE will
+be replaced with the name of your country or site
+(e.g. Cardososchedule.csv, FrenchGuianaschedule.cv) The description
+follows every column name:
+
+
+\textbf{trt.name} = treatment name, following the naming convention
+suggested by Diane.  Treatments are named after the two parameters of
+the negative binomial distribution (``\emph{mu}'' and ``\emph{k}'').
+Names are in the form ``muXkY'', where X and Y are numbers which
+multiply \emph{mu} and \emph{k}, respectively, in different
+treatments.
+
+\textbf{intended.mu} = the actual parameter values used in this field site. the
+``mu1k1'' treatment was calculated from the original data, the others
+were derived from it by multiplying those values of mu and k by the
+range of factors agreed upon by the working group (\emph{mu}: 0.1,
+0.2, 0.4, 0.6, 0.8, 1, 1.5, 2, 2.5, 3 and \emph{k}: 0.5, 1, 2)
+
+\textbf{intended.k} = as above, but for \emph{k}
+
+\textbf{temporal.block} = after intended.mu and intended.k were
+calculated, the treatments were divided into three random groups;
+these groups begin on different days (the 1st, 2nd and 3rd days of the
+experiment).  The grouping was tested with an ANOVA to confirm that
+there is no significant difference in intended.mu or intended.k.
+
+1-67 = these columns represent ``days from beginning of
+experiment''. They do \textbf{not} represent calendar dates.  Each
+column gives the amount of \emph{in mm} that should be added to each
+plant.  Remember to multiply these by the catchment area of your
+bromeliad species, AND by the correction factor for the canopy, as
+described by Diane and her team in Costa Rica.  Therefore treatments
+are applied to bromeliads over a period of 67 days, allowing for the
+preparation of bromeliads beforehand, the calculation of correction
+factors, and the final destructive sampling at the end.  plants
+receive no water on days marked both NA and 0.  (NA's represent days
+added by the experimental design, for example the temporal blocks, in
+contrast to 0s which are predicted by our model of rainfall).
+
+Looking along each row (rather than down each column), the pattern of treatments for each bromeliad is as follows:
+
+0 - 2 days delay, depending on the temporal.block (marked NA)*
+1 day median water of the mu1k1 treatment
+3 days without water (marked NA)
+60 days of treatment watering
+1 day treatment median
+0 - 2 days delay, depending on temporal.block (marked NA)*
+
+*The number of temporal.block days always sums to 2 (i.e. they are either at the beginning or end of the experiment)
+
+Thus the treatment period takes 2+1+3+60+1 = 67 days.
+
+Plants should be sampled, as per the protocol, after the treatment median is applied.  the NA days at the end (i.e. on days 66 or 67) of the schedule are simply included to keep the schedule looking ``square''.  Do not let the bromeliads sit in the field during these days!
+
+\end{document}
+
+\message{ !name(how.to.use.schedule.tex) !offset(-71) }

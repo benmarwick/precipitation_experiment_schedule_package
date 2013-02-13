@@ -95,7 +95,7 @@ sriv.integer <- function(mean.dist=9.159,k=1.5,n.days=60){
     ## from one.
     missing <- 1-sumwick[threshold-1]
     
-### remove rows from *data* into *output*.
+    ## remove rows from *data* into *output*.
     output[[z]] <- data[1:threshold,]
     ## replace the *wicks* value in *output/data* into the value of
     ## missing
@@ -116,7 +116,10 @@ sriv.integer <- function(mean.dist=9.159,k=1.5,n.days=60){
     misses[z] <- missing
     z <- z+1
   }
-  return(list(output=output,original.data=data2,thresholds=threshs,misses=misses))
+  return(list(output=output,
+              original.data=data2,
+              thresholds=threshs,
+              misses=misses))
 }
 
 
@@ -300,7 +303,8 @@ exp.trts <- function(params.rainfall,best.sequence){
   ## standardize experimental units (treatment medians, overall
   ## medians, etc)
   ## stick 'em all together
-  new.trt <- cbind(overall,preday,precip.amt.round,trt.med,postday1,postday2,destruct.samp)
+  new.trt <- cbind(overall,preday,precip.amt.round,
+                   trt.med,postday1,postday2,destruct.samp)
   ## get rid of unwanted names
   dimnames(new.trt)[[2]] <- NULL
 
@@ -434,7 +438,7 @@ rainfall <- function(site,Times=50){
   
 
 
-graph.print <- function(sim.data="out.server.Rdata",site){
+graph.print <- function(sim.data,site){
 
   datapath <- file.path(getwd(),site)
     

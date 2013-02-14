@@ -3,7 +3,7 @@
 ## calculations of the number of days with set amounts of
 ## precipitation in the rainfall experiment
 ## first source in our functions
-source("./Rscripts/precipitation.functions.R")
+source("../Rscripts/precipitation.functions.R")
 ## required packages
 library("bbmle")
 ##library("multicore")
@@ -26,7 +26,7 @@ library("bbmle")
 ## NOTE for CR this is not the case anymore:
 
 ## print the schedule
-graph.print(sim.data="Cardoso.sim.crunch01.zulu.Rdata",where="Cardoso")
+graph.print(sim.data="Cardoso.sim.crunch01.zulu.Rdata",site="Cardoso")
 
 ## note two VERY IMPORTANT THINGS:
 ## 1. there is no check that the temporal blocks will be unique to a

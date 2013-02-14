@@ -246,8 +246,7 @@ exp.trts <- function(params.rainfall,best.sequence){
                   )
   param.space["mu"]<-param.space["mu"]*params.rainfall["mu"]
   param.space["k"]<-param.space["k"]*params.rainfall["k"]
-  #browser()
-
+  
   param.space.list <- split(param.space,list(1:nrow(param.space)))
 
   treatments <- lapply(param.space.list,FUN=function(param.vec)
@@ -259,7 +258,9 @@ exp.trts <- function(params.rainfall,best.sequence){
   
   ## some of these are too long!  it seems to be the result of a weird
   ## quirk in the rounding when there is very high mu and very small k
-  
+  ## the error adds a single extra zero.
+  ## this little bit of code here deletes the last zero in all vectors
+  ## which are 'too long'.
   too.long <- which(sapply(treatments,length)>60)
   for(k in too.long){
     zero <- max(which(treatments[[k]]==0))
@@ -355,14 +356,15 @@ exp.trts <- function(params.rainfall,best.sequence){
   parameters <- cbind(param.space,act.param)
 
   ## are the total water amounts close to the intended ones?
-  water.amt <- cbind(experiment=apply(precip.amt.round,1,
-                       function(x){
-                         x2 <- x[!is.na(x)]
-                         sum(x2[-c(1,length(x2))])
-                       }
-                       ),
-                     intended=param.space[["intended.mu"]]*60
-                     )
+#  water.amt <- cbind(experiment=apply(precip.amt.round,1,
+#                       function(x){
+#                         x2 <- x[!is.na(x)]
+ #                        sum(x2[-c(1,length(x2))])
+#                       }
+#                       ),
+#                     intended=param.space[["intended.mu"]]*60
+#                     )
+### this function is broken!  overhaul the diagnostic codez.
   ## 60 not na days
   ## total water = n.days*mu
   ## parameter restimates should be accurate

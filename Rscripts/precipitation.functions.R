@@ -450,29 +450,31 @@ rainfall <- function(site,Times=50){
               yearly=yearly.params,          #parameters for each year
               data.patterns=data.patterns,   #patterns of sd~mean per yr
               shuffled=output)               #all shuffles generated.
-  
+  ## the 'output' object is a list.  it contains all the information
+  ## about the permutations of the rainfall schedule.
+
   ## save the output in a file named with the computer that generated
-  ## it
-  ## this is useful for identifying the school's computer from my home one.
+  ## it !  this is useful for identifying the school's computer from
+  ## my home one.
   out.file <- paste(site,"sim",Sys.info()[["nodename"]],"Rdata",sep='.')
   save(out,file=file.path(fieldsite.dir,out.file))
 }
   
 
-
+## this function generates graphs and the acutal schedule file itself
 graph.print <- function(sim.data,site){
-
-  datapath <- file.path(getwd(),site)
-    
+  ## sim.data is the name of the data file on disk
+  ## site is the name of the folder that has data for that site.
+  datapath <- file.path("../Experimental.Schedules",site)
+  ## read in simulation data
   load(file.path(datapath,sim.data))
   
-  ## load in the data, done on the school computer
-  ##browser()
+  ## extract the 'best' shuffle.  Also take the parameters.
   best.shuff <- out[["shuffled"]][["best.shuffle"]]
   parameters <- out[["param"]]
 
-  
-  
+  ## exp.trts() is a big function for actually creating the schedule.
+  ## it needs only the best shuffle and the parameters to be manipulated
   trts <- exp.trts(best.sequence=best.shuff,params.rainfall=parameters)
   
   ## Print the schedule:
@@ -480,17 +482,17 @@ graph.print <- function(sim.data,site){
   write.csv(trts[["schedule"]],file=schedname,row.names=FALSE)
 
   ## the schedule goes in the main directory for this location.  the
-  ## following diagnostic plots go in their own special one:
+  ## following diagnostic plots go in their own special subdirectory:
 
   diagnostic.dir <- file.path(datapath,"/diagnostics")
   dir.create(diagnostic.dir)
-
-  ##  setwd(file.path(getwd(),"/diagnostics"))
   
   ## graph all the schedules
+  ## clever trick -- reading it in and calling the NA strings "NA",
+  ## "sample" and "insects"
  
   rain.data <- read.csv(schedname,na.strings=c("NA","sample","insects"))
-  
+
   pdf(file.path(diagnostic.dir,"treatments.over.time.pdf"))
   ymax <- max(rain.data[,paste("X",as.character(1:68),sep='')],na.rm=TRUE)
   for(i in 1:dim(rain.data)[1]){
@@ -506,15 +508,16 @@ graph.print <- function(sim.data,site){
   
   
   ## a plot of the rainfall amounts, divided by k
-  
+  ## divide the dataframe by levels of k
   list.sched <-
     split(rain.data[,paste("X",as.character(1:68),sep='')],rain.data["intended.k"])
-  
+
+  ## plotting function
   plotr <- function(dat){
     plot(seq(1,ymax,length.out=62),type='n',ylim=c(0,ymax),ylab="rainfall")
     apply(dat,1,lines)
   }
-  
+  ## precipitation over time
   pdf(file.path(diagnostic.dir,"precip.time.pdf"))
   layout(matrix(1:3,nrow=3),widths=c(1),respect=TRUE)
   par(mar=rep(1,4))

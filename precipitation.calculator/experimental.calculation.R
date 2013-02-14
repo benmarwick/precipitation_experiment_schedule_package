@@ -26,7 +26,7 @@ rainfall(Times=50,site="Cardoso")
 ## NOTE for CR this is not the case anymore:
 
 ## print the schedule
-graph.print(sim.data="Cardoso.sim.crunch01.zulu.Rdata",where="Cardoso")
+graph.print(sim.data="Cardoso.sim.ardea.Rdata",site="Cardoso")
 
 ## note two VERY IMPORTANT THINGS:
 ## 1. there is no check that the temporal blocks will be unique to a

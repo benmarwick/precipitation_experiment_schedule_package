@@ -19,8 +19,8 @@ library("bbmle")
 ## years as columns, 60 rows (representing consecutive days)
 
 ### THERE SHOULD BE NO ROW NUMBERS in the input file. BE CAREFUL!
-rainfall(Times=50,site="Colombia")
-## this will print a file named after the fieldsite, AND the computer
+rainfall(Times=50,site="Cardoso")
+## this will create a file named after the fieldsite, AND the computer
 ## on which it was run!
 
 ## NOTE for CR this is not the case anymore:

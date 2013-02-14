@@ -372,28 +372,38 @@ exp.trts <- function(params.rainfall,best.sequence){
   list(schedule=sched,parameters=parameters,water.amt=water.amt)
 }
 
-
+## the wrapper function that calculates the precipitation amounts and
+## orders them as best we can.
 rainfall <- function(site,Times=50){
+  ## site = the name of the folder in which the data is stored (not
+  ## the directory, as the code will figure that out.
+  ## Times = the number of permutations of rainfall days to be
+  ## simulated.  The 'best' pemutation is selected from among them.
 
+  ## build path name
   datapath <- file.path("../Experimental.Schedules/",site)
 
+  ## you have to have the data in there first
   if(file.exists(datapath)==FALSE)
     stop("There is no folder with that name!")
   
   fieldsite.dir <- datapath
 
+  ## get all the .csv files from that directory, and check that one
+  ## starts with "Ppt"
   csvs <- list.files(pattern="*.csv",path=fieldsite.dir)
-  
   rainfall.file <- pmatch("Ppt",csvs,nomatch=NA)
-
   if(length(rainfall.file)!=1)
     stop("make sure there is one and only one file with 'Ppt' in the name")
   ppt.file <- file.path(fieldsite.dir,csvs[rainfall.file])
-  
+
+  ## read in the data
   rainfall.data <- read.csv(file=ppt.file)
   
   ## add a stop line if less than 60!  or just a message li
 
+  if(nrow(rainfall.data)!=60)
+    stop("wrong number of rows in the input data!")
   
   ## estimate parameters for the negative binomial distribution for each
   ## year **independently**, then take the mean of all these.
@@ -404,34 +414,46 @@ rainfall <- function(site,Times=50){
   ## derived from the probability density function
   new.data <- integerized(mean.dist=params.rainfall["mu"],
                           k=params.rainfall["k"])
-  ## this could be rounded to give the rainfall amounts in smooth
-  ## integer values, but its not really necessary?
-  
+  ## Just a reminder: intergerized() produces a vector of 60 numbers,
+  ## giving the 'integerized' numbers from the negative binomial
+  ## distribution
+
+  ## new.data is the control treatment 60 numbers, i.e. the ones which
+  ## will be used to approximate the temporal pattern.
+
+  ## ########################################
+  ## TEMPORAL PATTERN APPROXIMATION
+  ## ########################################
   
   ## calculate the window sizes -- only necessary once!
   wins <- lapply(2:59,function(z) windowmaker.l(window.size=z))
   ## a list 58 long -- the number of window sizes.
   ## each element is itself a list, giving the subscripts of all
   ## windows of that length
-  ##browser()
   ## the average pattern between the window size and the average
   ## standard deviation for the rainfall data.
-  data.patterns <- mean.sd.fast(rainfall.vector=rainfall.data,all.windows=wins)
+  data.patterns <- mean.sd.fast(rainfall.vector=rainfall.data,
+                                all.windows=wins)
   mean.patt <- rowMeans(data.patterns)
   ## the shuffler function permutes the derived data until it gets one
   ## that is close to the mean pattern.
-  output <-
-    shuffler.fast(times=Times,derived.data=new.data,mean.pattern=mean.patt,
-                  all.windows=wins)
+  output <-shuffler.fast(times=Times,derived.data=new.data,
+                         mean.pattern=mean.patt,
+                         all.windows=wins)
 
   ## should you wish to find the best shuffle in the output matrix, it
   ## is here:
-                                        #which(apply(output[[3]],2,function(y)
-                                        #isTRUE(all.equal(y,output[[1]]))))
-##
-  out <-
-    list(param=params.rainfall,yearly=yearly.params,data.patterns=data.patterns,shuffled=output)
-
+  ##which(apply(output[[3]],2,function(y)
+  ##isTRUE(all.equal(y,output[[1]]))))
+  ##
+  out <- list(param=params.rainfall,         #average rainfall parameters
+              yearly=yearly.params,          #parameters for each year
+              data.patterns=data.patterns,   #patterns of sd~mean per yr
+              shuffled=output)               #all shuffles generated.
+  
+  ## save the output in a file named with the computer that generated
+  ## it
+  ## this is useful for identifying the school's computer from my home one.
   out.file <- paste(site,"sim",Sys.info()[["nodename"]],"Rdata",sep='.')
   save(out,file=file.path(fieldsite.dir,out.file))
 }

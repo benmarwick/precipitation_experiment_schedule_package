@@ -18,6 +18,9 @@ nbin.estimate <- function(ppt){
 }
 
 
+## wrapper for sriv.integer() and wickwater().  These two functions
+## are defined below .  Turns the results of sriv.integer into a
+## handy vector for future use.
 integerized <- function(...){
   ## run the algorithm
   data <- sriv.integer(...)
@@ -34,7 +37,12 @@ integerized <- function(...){
 
 
 ## called in 'integerized'
-sriv.integer <- function(mean.dist=9.159,k=1.5,n.days=60){
+## this function carries out the "integerization" process:
+## it converts a negative binomial distribution (which is infinite,
+## and has continuous frequencies) to a finite one with integer
+## frequencies. The resulting distribution is exactly n.days long and
+## has mu = mean.dist and k = k (or at least almost equal to)
+sriv.integer <- function(mean.dist,k,n.days){
   
   
   ## start with the vector of amounts of rainfall

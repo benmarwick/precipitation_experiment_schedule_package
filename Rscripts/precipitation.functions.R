@@ -350,7 +350,10 @@ exp.trts <- function(params.rainfall,best.sequence){
 
   ##too many digits in the estimated numbers! TMI
   param.space<-round(param.space,digits=2)
-  sched <- cbind(trt.name,param.space,temporal.block=grp,final)
+  final.df<-data.frame(final)
+  names(final.df)<-paste("day",1:68,sep=".")
+  
+  sched <- cbind(trt.name,param.space,temporal.block=grp,final.df)
 
   list(schedule=sched)
 }
@@ -468,28 +471,28 @@ sched.print <- function(sim.data,site){
   ## the schedule goes in the main directory for this location.  the
   ## following diagnostic plots go in their own special subdirectory:
 diagnostic.plots <- function(site){
-  ## sim.data is the name of the data file on disk
+
   ## site is the name of the folder that has data for that site.
   datapath <- file.path("../Experimental.Schedules",site)
-  diagnostic.dir <- file.path(datapath,"/diagnostics")
+  diagnostic.dir <- file.path(datapath,"diagnostics")
   dir.create(diagnostic.dir)
   
   ## graph all the schedules
   ## clever trick -- reading it in and calling the NA strings "NA",
   ## "sample" and "insects"
   schedname <- paste(datapath,"/",site,"schedule.csv",sep="")
-  rain.data <-
+  schedule <-
     read.csv(schedname,na.strings=c("NA","sample","insects"))
-
-
-
-  ## now might be a convenient place for diagnostics, before bound in
-  ## dataframe
 
   ## because of the addition of the NA days, and also the median
   ## treatments at the start and the end, before re-calculating the
   ## parameters we must excise all NAs and also remove the start and
   ## end numbers (the medians)
+
+  browser()
+
+  ## get only the columns which 
+  head(rain.data)
   act.param <- apply(precip.amt.round,1,
                      function(x){
                        x2 <- x[!is.na(x)]

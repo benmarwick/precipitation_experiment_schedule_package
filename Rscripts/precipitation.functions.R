@@ -490,39 +490,44 @@ diagnostic.plots <- function(site){
   ## end numbers (the medians)
 
   browser()
+  ## get the columns that contain watering days
+  watering.days <- grepl(x=names(schedule),pattern="day.{2,3}")
+  ## divide into different days
+  watering.day.list <- split(schedule[,watering.days],1:nrow(schedule))
+  ## remove all NA values
+  watering.day.list.narm <- lapply(watering.day.list,function(x)
+  x[!is.na(x)])
+  ## then drop first and last (control median and treatment median,
+  ## respectively) to get the 'treatment' watering days.
+  watering.day.treatments <- lapply(watering.day.list.narm,
+                                    function(x) x[-c(1,length(x))])
 
-  ## get only the columns which 
-  head(rain.data)
-  act.param <- apply(precip.amt.round,1,
-                     function(x){
-                       x2 <- x[!is.na(x)]
-                                        #x2[-c(1,length(x2))]
-                       nbin.estimate(x2[-c(1,length(x2))])
-                     }
-                     )
-
-  act.param <- data.frame(t(act.param))
-  names(act.param) <- c("experiment.mu","experiment.k")
-
-  names(param.space) <- c("intended.mu","intended.k")
-
-  ## are the realized parameters close to the intended ones?
-  parameters <- cbind(param.space,act.param)
-
-  ## are the total water amounts close to the intended ones?
-#  water.amt <- cbind(experiment=apply(precip.amt.round,1,
-#                       function(x){
-#                         x2 <- x[!is.na(x)]
- #                        sum(x2[-c(1,length(x2))])
-#                       }
-#                       ),
-#                     intended=param.space[["intended.mu"]]*60
-#                     )
-### this function is broken!  overhaul the diagnostic codez.
-  ## 60 not na days
-  ## total water = n.days*mu
-  ## parameter restimates should be accurate
+  ## DIAGNOSTICS
+  ## Is there the correct amount of water in each treatment?
   
+  intended.water <- schedule[["mu"]]*60
+  experimental.water <- sapply(watering.day.treatments,sum)
+
+  pdf(file.path(diagnostic.dir,"water.amt.pdf"))
+  plot(intended.water,experimental.water,main="water")
+  abline(0,1)
+  dev.off()
+
+  ## are the parameters close to what we intended?
+
+  realized.params <- lapply(watering.day.treatments,nbin.estimate)
+  realized.params <- do.call(rbind,realized.params)
+  realized.params <- data.frame(realized.params)
+
+
+  pdf(file.path(diagnostic.dir,"param.result.pdf"))
+  par(mfrow=c(1,2))
+  plot(realized.params[["mu"]],schedule[["mu"]],main="mu")
+  abline(0,1)
+  plot(realized.params[["k"]],schedule[["k"]],main="mu")
+  abline(0,1)
+  dev.off()
+
 
   pdf(file.path(diagnostic.dir,"treatments.over.time.pdf"))
   ymax <- max(rain.data[,paste("X",as.character(1:68),sep='')],na.rm=TRUE)
@@ -557,18 +562,9 @@ diagnostic.plots <- function(site){
   
   ## diagnostics
   
-  pdf(file.path(diagnostic.dir,"param.result.pdf"))
-  par(mfrow=c(1,2))
-  with(trts[["parameters"]],plot(intended.mu,experiment.mu,main="mu"))
-  abline(0,1)
-  with(trts[["parameters"]],plot(intended.k,experiment.k,main="k"))
-  abline(0,1)
-  dev.off()
+
   
-  pdf(file.path(diagnostic.dir,"water.amt.pdf"))
-  with(data.frame(trts[["water.amt"]]),plot(intended,experiment,main="water"))
-  abline(0,1)
-  dev.off()
+
   
   ## fit of best.shuffle to data
   pdf(file.path(diagnostic.dir,"meansd.comp.pdf"))

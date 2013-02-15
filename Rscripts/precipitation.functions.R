@@ -546,31 +546,19 @@ diagnostic.plots <- function(site){
 
   dev.off()
 
-browser()  
- 
-  ## a plot of the rainfall amounts, divided by k
-  ## divide the dataframe by levels of k
-  list.sched <-
-    split(rain.data[,paste("X",as.character(1:68),sep='')],rain.data["intended.k"])
 
-  ## plotting function
-  plotr <- function(dat){
-    plot(seq(1,ymax,length.out=62),type='n',ylim=c(0,ymax),ylab="rainfall")
-    apply(dat,1,lines)
-  }
-  ## precipitation over time
   pdf(file.path(diagnostic.dir,"precip.time.pdf"))
   layout(matrix(1:3,nrow=3),widths=c(1),respect=TRUE)
   par(mar=rep(1,4))
-  lapply(list.sched,plotr)
+  for (i in unique(schedule[["k"]])){
+    ks <- schedule[["k"]]==i
+    matplot(t(schedule[ks,watering.days]),type="l",col="black")
+  }
   dev.off()
-  
+
+
   ## diagnostics
-  
-
-  
-
-  
+  ### START AGAIN HERE!!!
   ## fit of best.shuffle to data
   pdf(file.path(diagnostic.dir,"meansd.comp.pdf"))
   maxnum <- max(out[["shuffled"]][["best.shuffle.pattern"]],

@@ -358,11 +358,12 @@ exp.trts <- function(params.rainfall,best.sequence){
   ## treatments at the start and the end, before re-calculating the
   ## parameters we must excise all NAs and also remove the start and
   ## end numbers (the medians)
-  act.param <- apply(precip.amt.round,1,function(x){
-    x2 <- x[!is.na(x)]
-    #x2[-c(1,length(x2))]
-    nbin.estimate(x2[-c(1,length(x2))])
-  }
+  act.param <- apply(precip.amt.round,1,
+                     function(x){
+                       x2 <- x[!is.na(x)]
+                                        #x2[-c(1,length(x2))]
+                       nbin.estimate(x2[-c(1,length(x2))])
+                     }
                      )
 
   act.param <- data.frame(t(act.param))

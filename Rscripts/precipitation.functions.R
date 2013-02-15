@@ -9,6 +9,8 @@
 
 ## the maximum likelihood method for estimating parameters from the
 ## negative binomial distribution
+## takes a vector of precipitation amounts
+## returns the two parameters.
 nbin.estimate <- function(ppt){
   model <-
     mle2(ppt~dnbinom(mu=mu,size=k),start=list(mu=9,k=0.7),data=list(ppt=round(ppt)))

@@ -390,7 +390,7 @@ exp.trts <- function(params.rainfall,best.sequence){
   
   sched <- cbind(trt.name,param.space,temporal.block=grp,final)
 
-  list(schedule=sched,parameters=parameters,water.amt=water.amt)
+  list(schedule=sched,parameters=parameters)#,water.amt=water.amt)
 }
 
 ## the wrapper function that calculates the precipitation amounts and
@@ -483,7 +483,7 @@ rainfall <- function(site,Times=50){
   
 
 ## this function generates graphs and the acutal schedule file itself
-graph.print <- function(sim.data,site){
+sched.print <- function(sim.data,site){
   ## sim.data is the name of the data file on disk
   ## site is the name of the folder that has data for that site.
   datapath <- file.path("../Experimental.Schedules",site)
@@ -501,17 +501,21 @@ graph.print <- function(sim.data,site){
   ## Print the schedule:
   schedname <- paste(datapath,"/",site,"schedule.csv",sep="")
   write.csv(trts[["schedule"]],file=schedname,row.names=FALSE)
+}
 
   ## the schedule goes in the main directory for this location.  the
   ## following diagnostic plots go in their own special subdirectory:
-
+diagnostic.plots <- function(site){
+  ## sim.data is the name of the data file on disk
+  ## site is the name of the folder that has data for that site.
+  datapath <- file.path("../Experimental.Schedules",site)
   diagnostic.dir <- file.path(datapath,"/diagnostics")
   dir.create(diagnostic.dir)
   
   ## graph all the schedules
   ## clever trick -- reading it in and calling the NA strings "NA",
   ## "sample" and "insects"
- 
+  schedname <- paste(datapath,"/",site,"schedule.csv",sep="")
   rain.data <- read.csv(schedname,na.strings=c("NA","sample","insects"))
 
   pdf(file.path(diagnostic.dir,"treatments.over.time.pdf"))
@@ -526,7 +530,7 @@ graph.print <- function(sim.data,site){
          )
   }
   dev.off()
-  
+
   
   ## a plot of the rainfall amounts, divided by k
   ## divide the dataframe by levels of k

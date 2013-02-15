@@ -470,7 +470,7 @@ sched.print <- function(sim.data,site){
 
   ## the schedule goes in the main directory for this location.  the
   ## following diagnostic plots go in their own special subdirectory:
-diagnostic.plots <- function(site){
+diagnostic.plots <- function(site,sim.data){
 
   ## site is the name of the folder that has data for that site.
   datapath <- file.path("../Experimental.Schedules",site)
@@ -531,7 +531,7 @@ diagnostic.plots <- function(site){
   abline(0,1)
   dev.off()
 
-
+  ## Visualization of the treatments -- useful for finding errors
   ## how to the treatments change over time?
   rainest.day <-  max(schedule[watering.days],na.rm=TRUE)
 
@@ -546,7 +546,8 @@ diagnostic.plots <- function(site){
 
   dev.off()
 
-
+  ## how do the treatments vary over time, within each level of k?
+  ## this graph could be extended to split on mu, or temporal.block
   pdf(file.path(diagnostic.dir,"precip.time.pdf"))
   layout(matrix(1:3,nrow=3),widths=c(1),respect=TRUE)
   par(mar=rep(1,4))
@@ -557,8 +558,10 @@ diagnostic.plots <- function(site){
   dev.off()
 
 
-  ## diagnostics
-  ### START AGAIN HERE!!!
+  ## diagnostics of the shuffling pattern
+
+  ## read in simulation data
+  load(file.path(datapath,sim.data))        # creates object 'out'
   ## fit of best.shuffle to data
   pdf(file.path(diagnostic.dir,"meansd.comp.pdf"))
   maxnum <- max(out[["shuffled"]][["best.shuffle.pattern"]],

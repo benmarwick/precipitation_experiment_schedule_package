@@ -40,7 +40,7 @@ sched.print(sim.data="Cardoso.sim.ardea.Rdata",site="Cardoso")
 ## please do make sure that you have updated its internal list of the
 ## sites, if you have added a new one.
 
-diagnostic.plots(site="Cardoso")
+diagnostic.plots(sim.data="Cardoso.sim.ardea.Rdata",site="Cardoso")
 
 site.parameter.comparison()
 

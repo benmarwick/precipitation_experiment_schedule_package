@@ -79,7 +79,7 @@ sriv.integer <- function(mean.dist,k,n.days=60){
   ## It might be best to increase this 'stopping rule', if we find
   ## that for other parameters the algorithm fails.
   while(sum(data$wicks)>1e-10){
-    #browser()
+ 
     sumwick <- cumsum(data$wicks)
     
     ## which valueS of this sum are no more than 2 abd **greater**
@@ -177,7 +177,7 @@ mean.sd.fast <- function(rainfall.vector,all.windows=wins){
 ## subscripts of a rainfall vector which will be used to calculate 
 windowmaker.l <- function(window.size,size=60){
   windows <- lapply(0:(size-1),function(w) (1:window.size)+w )
-  ##browser()
+
   ## is there a 60 in any spot (other than the last!)
  fell.off <- sapply(windows,function(z) 60%in%z[1:length(z)-1])
   windows[!fell.off] #not the ones which fell off
@@ -195,7 +195,7 @@ rapply.windows <- function(one.year,ss.list=all.windows){
 ## each element represents a shuffle of the dataset
 ## then we search over all of them to find the best one
 shuffler.fast <- function(times,derived.data,mean.pattern,all.windows=wins) {
-  #browser()
+
   ## max
   bigday <- max(derived.data)
   ## everything but the max
@@ -241,7 +241,7 @@ shuffler.fast <- function(times,derived.data,mean.pattern,all.windows=wins) {
 ### this function and its dependent variables are the only correct way
 ### to reorder the variables.
 orderize <- function(z,new=order(best.sequence)){
-	#browser()
+
   x <- numeric(length=60)
   x[new] <- sort(z)
   x 
@@ -333,7 +333,7 @@ exp.trts <- function(params.rainfall,best.sequence){
   #look 'em up:
   shifts <- sapply(grp,function(s) lkup[[s]])
   ##PROBLEM
-#browser()
+
   ## new.trt has both NA and numerical, so this is everything:
   ss <-  matrix(c(row(new.trt), col(new.trt)), ncol = 2)
   ## make a new matrix to put the shifted numbers in.
@@ -481,22 +481,23 @@ diagnostic.plots <- function(site){
   ## clever trick -- reading it in and calling the NA strings "NA",
   ## "sample" and "insects"
   schedname <- paste(datapath,"/",site,"schedule.csv",sep="")
-  schedule <-
-    read.csv(schedname,na.strings=c("NA","sample","insects"))
+  schedule <- read.csv(schedname,na.strings=c("NA","sample","insects"),
+                       stringsAsFactors=FALSE)
 
   ## because of the addition of the NA days, and also the median
   ## treatments at the start and the end, before re-calculating the
   ## parameters we must excise all NAs and also remove the start and
   ## end numbers (the medians)
 
-  browser()
   ## get the columns that contain watering days
   watering.days <- grepl(x=names(schedule),pattern="day.{2,3}")
   ## divide into different days
-  watering.day.list <- split(schedule[,watering.days],1:nrow(schedule))
+  watering.day.list <-
+  split(schedule[,watering.days],1:nrow(schedule))
+  names(watering.day.list) <- schedule$trt.name
   ## remove all NA values
-  watering.day.list.narm <- lapply(watering.day.list,function(x)
-  x[!is.na(x)])
+  watering.day.list.narm <- lapply(watering.day.list,
+                                   function(x) x[!is.na(x)])
   ## then drop first and last (control median and treatment median,
   ## respectively) to get the 'treatment' watering days.
   watering.day.treatments <- lapply(watering.day.list.narm,
@@ -522,27 +523,31 @@ diagnostic.plots <- function(site){
 
   pdf(file.path(diagnostic.dir,"param.result.pdf"))
   par(mfrow=c(1,2))
-  plot(realized.params[["mu"]],schedule[["mu"]],main="mu")
+  plot(realized.params[["mu"]]~schedule[["mu"]],main="mu",
+       xlab="intended value of mu",ylab="realized value of mu")
   abline(0,1)
-  plot(realized.params[["k"]],schedule[["k"]],main="mu")
+  plot(realized.params[["k"]]~schedule[["k"]],main="k",
+       xlab="intended value of k",ylab="realized value of k")
   abline(0,1)
   dev.off()
 
+
+  ## how to the treatments change over time?
+  rainest.day <-  max(schedule[watering.days],na.rm=TRUE)
 
   pdf(file.path(diagnostic.dir,"treatments.over.time.pdf"))
-  ymax <- max(rain.data[,paste("X",as.character(1:68),sep='')],na.rm=TRUE)
-  for(i in 1:dim(rain.data)[1]){
-    plot(unlist(rain.data[i,paste("X",as.character(1:68),sep='')]),
-         ylab="rainfall",
-         main=rain.data[i,"trt.name"],
-         xlim=c(0,68),
-         type='b',
-         ylim=c(0,ymax)
+  lapply(names(watering.day.treatments),
+         function(x){plot(watering.day.treatments[[x]],main=x,
+                          ylab="rainfall",xlim=c(0,68),
+                          type='b',ylim=c(0,rainest.day)
+                          )
+                   }
          )
-  }
+
   dev.off()
 
-  
+browser()  
+ 
   ## a plot of the rainfall amounts, divided by k
   ## divide the dataframe by levels of k
   list.sched <-

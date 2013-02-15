@@ -350,47 +350,9 @@ exp.trts <- function(params.rainfall,best.sequence){
 
   ##too many digits in the estimated numbers! TMI
   param.space<-round(param.space,digits=2)
-
-  ## now might be a convenient place for diagnostics, before bound in
-  ## dataframe
-
-  ## because of the addition of the NA days, and also the median
-  ## treatments at the start and the end, before re-calculating the
-  ## parameters we must excise all NAs and also remove the start and
-  ## end numbers (the medians)
-  act.param <- apply(precip.amt.round,1,
-                     function(x){
-                       x2 <- x[!is.na(x)]
-                                        #x2[-c(1,length(x2))]
-                       nbin.estimate(x2[-c(1,length(x2))])
-                     }
-                     )
-
-  act.param <- data.frame(t(act.param))
-  names(act.param) <- c("experiment.mu","experiment.k")
-
-  names(param.space) <- c("intended.mu","intended.k")
-
-  ## are the realized parameters close to the intended ones?
-  parameters <- cbind(param.space,act.param)
-
-  ## are the total water amounts close to the intended ones?
-#  water.amt <- cbind(experiment=apply(precip.amt.round,1,
-#                       function(x){
-#                         x2 <- x[!is.na(x)]
- #                        sum(x2[-c(1,length(x2))])
-#                       }
-#                       ),
-#                     intended=param.space[["intended.mu"]]*60
-#                     )
-### this function is broken!  overhaul the diagnostic codez.
-  ## 60 not na days
-  ## total water = n.days*mu
-  ## parameter restimates should be accurate
-  
   sched <- cbind(trt.name,param.space,temporal.block=grp,final)
 
-  list(schedule=sched,parameters=parameters)#,water.amt=water.amt)
+  list(schedule=sched)
 }
 
 ## the wrapper function that calculates the precipitation amounts and
@@ -516,7 +478,48 @@ diagnostic.plots <- function(site){
   ## clever trick -- reading it in and calling the NA strings "NA",
   ## "sample" and "insects"
   schedname <- paste(datapath,"/",site,"schedule.csv",sep="")
-  rain.data <- read.csv(schedname,na.strings=c("NA","sample","insects"))
+  rain.data <-
+    read.csv(schedname,na.strings=c("NA","sample","insects"))
+
+
+
+  ## now might be a convenient place for diagnostics, before bound in
+  ## dataframe
+
+  ## because of the addition of the NA days, and also the median
+  ## treatments at the start and the end, before re-calculating the
+  ## parameters we must excise all NAs and also remove the start and
+  ## end numbers (the medians)
+  act.param <- apply(precip.amt.round,1,
+                     function(x){
+                       x2 <- x[!is.na(x)]
+                                        #x2[-c(1,length(x2))]
+                       nbin.estimate(x2[-c(1,length(x2))])
+                     }
+                     )
+
+  act.param <- data.frame(t(act.param))
+  names(act.param) <- c("experiment.mu","experiment.k")
+
+  names(param.space) <- c("intended.mu","intended.k")
+
+  ## are the realized parameters close to the intended ones?
+  parameters <- cbind(param.space,act.param)
+
+  ## are the total water amounts close to the intended ones?
+#  water.amt <- cbind(experiment=apply(precip.amt.round,1,
+#                       function(x){
+#                         x2 <- x[!is.na(x)]
+ #                        sum(x2[-c(1,length(x2))])
+#                       }
+#                       ),
+#                     intended=param.space[["intended.mu"]]*60
+#                     )
+### this function is broken!  overhaul the diagnostic codez.
+  ## 60 not na days
+  ## total water = n.days*mu
+  ## parameter restimates should be accurate
+  
 
   pdf(file.path(diagnostic.dir,"treatments.over.time.pdf"))
   ymax <- max(rain.data[,paste("X",as.character(1:68),sep='')],na.rm=TRUE)

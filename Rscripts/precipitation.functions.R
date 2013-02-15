@@ -131,7 +131,15 @@ sriv.integer <- function(mean.dist,k,n.days){
               thresholds=threshs,
               misses=misses))
 }
-
+## output = a list of rainfall amount frequencies, split according to
+## which 'wicks' will sum to 1
+## original.data = the same list, unsplit.  Note it is not exactly the
+## same, since in 'output' the final wick in each split will be
+## divided so it sums to 1
+## thresholds = the rownumbers where 'output' was split
+## misses = the wicks that were split.
+## ### NOTE: the last three items here were not used for anything --
+## they were included when I was developing it and I kept them just in case.
 
 ## called in 'integerized'
 

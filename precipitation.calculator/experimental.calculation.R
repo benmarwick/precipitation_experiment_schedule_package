@@ -26,7 +26,7 @@ rainfall(Times=50,site="Cardoso")
 ## NOTE for CR this is not the case anymore:
 
 ## print the schedule
-sched.print(sim.data="Colombia.sim.spider01.zulu.Rdata",site="Colombia")
+sched.print(sim.data="Cardoso.sim.ardea.Rdata",site="Cardoso")
 
 ## note two VERY IMPORTANT THINGS:
 ## 1. there is no check that the temporal blocks will be unique to a
@@ -40,7 +40,7 @@ sched.print(sim.data="Colombia.sim.spider01.zulu.Rdata",site="Colombia")
 ## please do make sure that you have updated its internal list of the
 ## sites, if you have added a new one.
 
-diagnostic.plots(sim.data="Colombia.sim.spider01.zulu.Rdata",site="Colombia")
+diagnostic.plots(sim.data="Cardoso.sim.ardea.Rdata",site="Cardoso")
 
 site.parameter.comparison()
 

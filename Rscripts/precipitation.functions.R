@@ -602,29 +602,67 @@ diagnostic.plots <- function(site,sim.data){
   
 }
 
+paramplot <- function(parm = "intended.mu",scheds=scheds) {
+  vals <- lapply(scheds,"[[",i=parm)
+  values <- lapply(vals, unique)
+  rainest <- max(unlist(values))
+  length(values[[1]])
+  plot(c(1, length(values[[1]])), c(0, rainest), type = "n", 
+       bty = "l", xlab = "rank of value", xaxt = "n", ylab = "value of parameter", 
+       main = "comparison of parameters among CR and FG \n black  = CR, blue = Cardoso,red=Colombia")
+  lapply(names(values), function(z) points(values[[z]], pch = 21, bg =
+                                           c("black", "white","blue","red")[which(names(values)
+                                           == z)]))
+  lapply(values, points)
+}
 
 site.parameter.comparison <- function() {
-    calculated.sites <- list(CostaRica = "./CostaRica", FrenchGuiana = "./FrenchGuiana", 
-        Cardoso = "./Cardoso",Colombia="./Colombia")
+    calculated.sites <- list(CostaRica =
+    "../Experimental.Schedules/CostaRica",
+                             FrenchGuiana =
+    "../Experimental.Schedules/FrenchGuiana",
+                             Cardoso =
+    "../Experimental.Schedules/Cardoso",
+                             Colombia="../Experimental.Schedules/Colombia")
     scheds <- lapply(calculated.sites, function(x) list.files(x, 
         pattern = "*schedule.csv", full.names = TRUE))
     scheds <- lapply(scheds, read.csv)
-    paramplot <- function(parm = "intended.mu") {
-        vals <- lapply(scheds, function(z) z[[parm]])
-        values <- lapply(vals, unique)
-        rainest <- max(unlist(values))
-        length(values[[1]])
-        plot(c(1, length(values[[1]])), c(0, rainest), type = "n", 
-            bty = "l", xlab = "rank of value", xaxt = "n", ylab = "value of parameter", 
-            main = "comparison of parameters among CR and FG \n black  = CR, blue = Cardoso,red=Colombia")
-        lapply(names(values), function(z) points(values[[z]], 
-            pch = 21, bg = c("black", "white", "blue","red")[which(names(values) == 
-                z)]))
-        lapply(values, points)
-    }
-    pdf("parameter.comparison.pdf", height = 4)
-    layout(matrix(1:2, nrow = 1))
-    par(cex = 0.6)
-    lapply(c("intended.mu", "intended.k"), function(y) paramplot(parm = y))
-    dev.off()
+    paramplot("mu")
+  }
+
+site.reader <- function() {
+    calculated.sites <- list(CostaRica =
+    "../Experimental.Schedules/CostaRica",
+                             FrenchGuiana =
+    "../Experimental.Schedules/FrenchGuiana",
+                             Cardoso =
+    "../Experimental.Schedules/Cardoso",
+                             Colombia="../Experimental.Schedules/Colombia",
+                             Macae="../Experimental.Schedules/Macae")
+    scheds <- lapply(calculated.sites, function(x) list.files(x, 
+        pattern = "*schedule.csv", full.names = TRUE))
+    lapply(scheds, read.csv,stringsAsFactors=FALSE)   
+  }
+
+##     pdf("parameter.comparison.pdf", height = 4)
+##     layout(matrix(1:2, nrow = 1))
+##     par(cex = 0.6)
+##     lapply(c("mu", "k"), function(y) paramplot(parm = y))
+##     dev.off()
+## }
+
+temporal.block.comparison <- function(){
+  sites <- site.reader()
+  temp.block.list <- lapply(sites,"[[",i="temporal.block")
+  identical(temp.block.list[1],temp.block.list[2])
+  all.site.combos <- combn(names(temp.block.list),m=2)
+  pairwise.block.comparison <- apply(all.site.combos,2,
+                                     function(y) {
+                                       identical(temp.block.list[y[[1]]],
+                                                 temp.block.list[y[[2]]])
+                                     }
+                                     )
+  if(any(pairwise.block.comparison))
+    print("PROBLEM: some temporal blocks are identical!")
+  else print("all temporal blocks are different!")
 }

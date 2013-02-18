@@ -42,5 +42,8 @@ sched.print(sim.data="Cardoso.sim.ardea.Rdata",site="Cardoso")
 
 diagnostic.plots(sim.data="Cardoso.sim.ardea.Rdata",site="Cardoso")
 
-site.parameter.comparison()
+
+## run this check after calculating a new schedule.  Tells you if any
+## two schedules are identical:
+temporal.block.comparison()
 

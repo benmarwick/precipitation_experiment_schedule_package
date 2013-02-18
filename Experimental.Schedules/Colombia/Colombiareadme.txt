@@ -1,5 +1,5 @@
 [1] "readme file for the experimental schedule from Colombia"
-[1] "calculated on 2013-02-15"
+[1] "calculated on 2013-02-18"
 [1] "parameter estimates by year"
        X1996     X1997      X1998     X1999
 mu 8.5000786 9.2003392 11.4000082 8.9831734

@@ -4,7 +4,7 @@
 ## precipitation in the rainfall experiment
 ## first source in our functions
 source("../Rscripts/precipitation.functions.R")
-## required packages
+## required packagesb
 library("bbmle")
 ##library("multicore")
 ## read in data
@@ -47,3 +47,4 @@ diagnostic.plots(sim.data="Cardoso.sim.ardea.Rdata",site="Cardoso")
 ## two schedules are identical:
 temporal.block.comparison()
 
+parameter.value.comparison()

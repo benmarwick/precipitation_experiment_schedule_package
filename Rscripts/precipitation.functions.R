@@ -666,3 +666,23 @@ temporal.block.comparison <- function(){
     print("PROBLEM: some temporal blocks are identical!")
   else print("all temporal blocks are different!")
 }
+
+
+parameter.value.comparison <- function(){
+  sites <- site.reader()
+  sites.mu.values <- lapply(sites,
+                            function(x){
+                              unique(x[,grepl("mu",names(x))])
+                            }
+                            )
+    sites.k.values <- lapply(sites,
+                            function(x){
+                              unique(x[,grepl('\\.k|^k$',names(x))])
+                            }
+                            )
+  pdf("parameters.of.different.sites.pdf")
+  stripchart(sites.k.values,pch=1,xlab="parameter value",main="Value of k")
+  stripchart(sites.mu.values,pch=1,
+             xlab = "parameter value",main="Value of mu")
+  dev.off()
+}

@@ -1,6 +1,3 @@
-% Precipitation manipulation experiments -- diagnostics and illustrations
-
-The program which produces the precipitation schedule produces a number of diagnostic plots as well.  This document shows some of these.  It demonstrates how our rainfall schedule reflects natural rainfall, and how our manipulations alter it.
 
 ```{r message=FALSE, echo=FALSE}
 source(file="~/Dropbox/PhD/precipitation/Rscripts/precipitation.functions.R")
@@ -10,8 +7,12 @@ library(reshape)
 site <- "Colombia"
 opts_chunk$set(warning=FALSE,message=FALSE,echo=FALSE, dev="png")
 ```
-write normal text!!
 
+# Precipitation manipulation experiments -- diagnostics and illustrations
+
+**This document is for `r site`**
+
+The schedule for the precipitation experiment is based on rainfall data for our local sites.  This document will illustrate the process of calculating schedules from rainfall data.  A modified version of this document could be a useful supplementary material for our eventual papers.  In the meantime it will help us understand how the code works in the first place.
 
 ```{r nbin,comment="",tidy=TRUE,warning=FALSE}
   ## site = the name of the folder in which the data is stored (not
@@ -61,7 +62,8 @@ make.points <- function(one.year.data){
   } 
 ```
 
-```{r,fig.cap="This figure shows a frequency distribution of rainfall in every year.  The black dots represent an idealized (average) negative binomial distribution of rainfall amounts.",message=FALSE}
+## Fitting the Negative Binomial distribution to raw rainfall data
+```{r,fig.cap="",message=FALSE}
 
   ## use these average parameter estimates to calculate the 'new data',
   ## derived from the probability density function
@@ -88,16 +90,29 @@ ggplot(subset(rainfall.pred.model,subset=!rainfall.pred.model$origin%in%c("model
   geom_point(data=subset(rainfall.pred.model,subset=rainfall.pred.model$origin=="model"),
              colour="black",size=2)
 ```
+This graph shows the frequency distribution of rainfall amounts for all the years in the data you submitted.  Rainfall amount is on the x-axis (in millimeters) and the number of days is on the y-axis.  
 
-```{r message=FALSE,fig.cap="This figure shows the negative binomial prediction (as above).  However, it cannot be used directly because it predicts non-integer frequencies for each rainfall amount (and of course we cannot water for a non-integer number of days!).  We came up with an 'integerization' algorithim which approximates this smooth line with the points shown here."}
+We fit a Negative Binomial distribution to this data.  This is a several-step process:
+
+1. Round rainfall amounts to integers
+2. Estimate *mu* and *k* for each year of the dataset using maximum likelihood
+3. average these parameters to produce the "average distribution"
+
+This average distribution is shown in black against all the raw data, which is shown in colour.  You can see that it fits rather well -- except for the long tail, which predicts <1 day for many of the large rainfall amounts.
+
+## "integerizing" the distribution.
+```{r message=FALSE,fig.cap=""}
 ggplot(subset(rainfall.pred.model,subset=rainfall.pred.model$origin%in%c("model","newdata")),
        aes(x=amount,y=frequency,colour=origin))+
   geom_point()
 
 ```
+This figure shows the negative binomial prediction (as above).  However, it cannot be used directly because it predicts non-integer frequencies for each rainfall amount (and of course we cannot water for a non-integer number of days!).  We came up with an 'integerization' algorithim which approximates this smooth line with the discrete points shown here. The algorithim works like this: when we round the non-integer frequencies of rainfall amounts to round numbers, we either increase or decrease by a small amount (<1).  We add together the "leftovers", until we get a quantity equal to one.  We multiply each "leftover" by its rainfall amount, and add them together.  
 
+The above figure shows that the resulting integers are OK (not perfect) at fitting the nice, smooth negative binomial line.
 
-```{r, fig.cap="Each panel represents the distribution of days within one treatment (bromeliad).  Rows are variation in the *mu* parameter, while columns are *k*.",message=FALSE}
+## altering the parameters -- applying the experimental treatment
+```{r, fig.cap="",message=FALSE}
 
   ## first make the vector of shifts
   ## then multiply them!  makes all the steps easier
@@ -146,9 +161,10 @@ trt.rainfalls <- data.frame(mu=rep(param.space.label[["mu"]],n.rainy.days),
 
 ggplot(trt.rainfalls,aes(x=amount,y=frequency,group=trt.name))+geom_point()+geom_path()+facet_grid(mu~k)
 ```
+Each panel represents the distribution of days within one treatment (bromeliad).  Rows are variation in the *mu* parameter, while columns are *k*.  These are the treatments which we decided on as a group: increases & decreases in the two parameters of the distribution. 
 
-
-```{r fig.cap="The temporal pattern of rain in each bromeliad -- equal to the previous figure but with the addition of a sequence of rainfall that approximates the variation natural to the site.",message=FALSE}
+## patterning the rainfall appropriately
+```{r fig.cap="",message=FALSE}
   schedname <- paste(datapath,"/",site,"schedule.csv",sep="")
   schedule <- read.csv(schedname,na.strings=c("NA","sample","insects"),
                        stringsAsFactors=FALSE)
@@ -160,7 +176,9 @@ test2 <- test[order(test$mu,test$k,test$time),]
 
 ggplot(data=test2,aes(x=time,y=day,group=trt.name))+geom_path()+facet_grid(mu~k)
 ```
+The temporal pattern of rain in each bromeliad -- equal to the previous figure but with the addition of a sequence of rainfall that approximates the variation natural to the site.
 
+## Temporal patterns determined in this way are indistinguishable from nature
 ```{r fig.cap="The control treatment bromeliad (i.e. *mu1k1*, black line) compared with the rainfall data, to demonstrate that they are very similar in temporal pattern"}
 raw.schedules <- data.frame(day=rep(1:60,times=ncol(rainfall.data)),melt(rainfall.data))
 names(raw.schedules) <- c("day","year","mm")

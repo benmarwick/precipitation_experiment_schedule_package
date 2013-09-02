@@ -17,7 +17,6 @@ nbin.estimate <- function(ppt){
   coef(model)
 }
 
-
 ## wrapper for sriv.integer() and wickwater().  These two functions
 ## are defined below .  Turns the results of sriv.integer into a
 ## handy vector for future use.

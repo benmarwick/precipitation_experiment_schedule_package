@@ -1,18 +1,17 @@
 
 ```{r message=FALSE, echo=FALSE}
-source(file="~/Dropbox/PhD/precipitation/Rscripts/precipitation.functions.R")
+source(file="../../Rscripts/precipitation.functions.R")
 library(bbmle)
 library(ggplot2)
 library(reshape)
-#site <- "Colombia"
 opts_chunk$set(warning=FALSE,message=FALSE,echo=FALSE, dev="png")
 dirstring <- strsplit(getwd(),"/",)
-present.dir <- dirstring[[1]][length(unlist(dirstring))]
+site <- dirstring[[1]][length(unlist(dirstring))]
 ```
 
 # Precipitation manipulation experiments -- diagnostics and illustrations
 
-**This document is for `r present.dir`**
+**This document is for `r site`**
 
 The schedule for the precipitation experiment is based on rainfall data for our local sites.  This document will illustrate the process of calculating schedules from rainfall data.  A modified version of this document could be a useful supplementary material for our eventual papers.  In the meantime it will help us understand how the code works in the first place.
 

@@ -1,0 +1,202 @@
+
+```{r message=FALSE, echo=FALSE}
+source(file="../../Rscripts/precipitation.functions.R")
+library(bbmle)
+library(ggplot2)
+library(reshape)
+dirstring <- strsplit(getwd(),"/",)
+site <- dirstring[[1]][length(unlist(dirstring))]
+opts_chunk$set(warning=FALSE,message=FALSE,echo=FALSE, dev="png")#fig.path=paste0("figure/",site))
+```
+
+# Precipitation manipulation experiments -- diagnostics and illustrations
+
+**This document is for `r site`**
+
+The schedule for the precipitation experiment is based on rainfall data for our local sites.  This document will illustrate the process of calculating schedules from rainfall data.  A modified version of this document could be a useful supplementary material for our eventual papers.  In the meantime it will help us understand how the code works in the first place.
+
+```{r nbin,comment="",tidy=TRUE,warning=FALSE}
+  ## site = the name of the folder in which the data is stored (not
+  ## the directory, as the code will figure that out.
+  ## Times = the number of permutations of rainfall days to be
+  ## simulated.  The 'best' pemutation is selected from among them.
+
+  ## build path name
+  datapath <- file.path("~/Dropbox/PhD/precipitation/Experimental.Schedules/",site)
+
+  ## you have to have the data in there first
+  if(file.exists(datapath)==FALSE)
+    stop("There is no folder with that name!")
+  
+  fieldsite.dir <- datapath
+
+  ## get all the .csv files from that directory, and check that one
+  ## starts with "Ppt"
+  csvs <- list.files(pattern="*.csv",path=fieldsite.dir)
+  rainfall.file <- pmatch("Ppt",csvs,nomatch=NA)
+  if(length(rainfall.file)!=1)
+    stop("make sure there is one and only one file with 'Ppt' in the name")
+  ppt.file <- file.path(fieldsite.dir,csvs[rainfall.file])
+
+  ## read in the data
+  rainfall.data <- read.csv(file=ppt.file)
+  
+  ## add a stop line if less than 60!  or just a message li
+
+  if(nrow(rainfall.data)!=60)
+    stop("wrong number of rows in the input data!")
+  
+  ## estimate parameters for the negative binomial distribution for each
+  ## year **independently**, then take the mean of all these.
+  yearly.params <- sapply(rainfall.data[1:60,],nbin.estimate)
+  params.rainfall <- rowMeans(yearly.params)
+```
+
+```{r}
+make.points <- function(one.year.data){
+  freqs <- as.numeric(table(one.year.data))
+  rainfalls <- sort(unique(one.year.data))
+  data.frame(amount=rainfalls,frequency=freqs)
+#   one.yr.data <- data.frame(rainfalls=rainfalls,freqs=as.numeric(freqs))
+#   one.yr.data <- one.yr.data[order(one.yr.data$rainfalls),]
+#   with(one.yr.data,lines(rainfalls,freqs))
+  } 
+```
+
+## Fitting the Negative Binomial distribution to raw rainfall data
+```{r,fig.cap="",message=FALSE}
+
+  ## use these average parameter estimates to calculate the 'new data',
+  ## derived from the probability density function
+new.data <- integerized(mean.dist=params.rainfall["mu"],
+                          k=params.rainfall["k"])
+
+rainfall.probs <- sapply(0:max(rainfall.data),dnbinom,mu=params.rainfall["mu"],size=params.rainfall["k"])
+
+rainfall.pred.model <- rbind(data.frame(origin="model",amount=0:max(rainfall.data),
+                                        frequency=rainfall.probs*60),
+                             data.frame(origin="newdata",make.points(new.data)))
+
+rainfall.points.list <- lapply(rainfall.data,make.points)
+yearnames <- rep(names(rainfall.points.list),sapply(rainfall.points.list,nrow))
+
+rainfall.pred.model <- rbind(rainfall.pred.model,
+                             data.frame(origin=yearnames,do.call(rbind,
+                                                                 rainfall.points.list))
+                             )
+
+ggplot(subset(rainfall.pred.model,subset=!rainfall.pred.model$origin%in%c("model","newdata")),
+       aes(x=amount,y=frequency,colour=origin))+
+  geom_point()+
+  geom_point(data=subset(rainfall.pred.model,subset=rainfall.pred.model$origin=="model"),
+             colour="black",size=2)
+```
+This graph shows the frequency distribution of rainfall amounts for all the years in the data you submitted.  Rainfall amount is on the x-axis (in millimeters) and the number of days is on the y-axis.  
+
+We fit a Negative Binomial distribution to this data.  This is a several-step process:
+
+1. Round rainfall amounts to integers
+2. Estimate *mu* and *k* for each year of the dataset using maximum likelihood
+3. average these parameters to produce the "average distribution"
+
+This average distribution is shown in black against all the raw data, which is shown in colour.  You can see that it fits rather well -- except for the long tail, which predicts <1 day for many of the large rainfall amounts.
+
+## "integerizing" the distribution.
+```{r message=FALSE,fig.cap=""}
+ggplot(subset(rainfall.pred.model,subset=rainfall.pred.model$origin%in%c("model","newdata")),
+       aes(x=amount,y=frequency,colour=origin))+
+  geom_point()
+
+```
+This figure shows the negative binomial prediction (as above).  However, it cannot be used directly because it predicts non-integer frequencies for each rainfall amount (and of course we cannot water for a non-integer number of days!).  We came up with an 'integerization' algorithim which approximates this smooth line with the discrete points shown here. The algorithim works like this: when we round the non-integer frequencies of rainfall amounts to round numbers, we either increase or decrease by a small amount (<1).  We add together the "leftovers", until we get a quantity equal to one.  We multiply each "leftover" by its rainfall amount, and add them together.  
+
+The above figure shows that the resulting integers are OK (not perfect) at fitting the nice, smooth negative binomial line.
+
+## altering the parameters -- applying the experimental treatment
+```{r, fig.cap="",message=FALSE}
+
+  ## first make the vector of shifts
+  ## then multiply them!  makes all the steps easier
+  mu.shift <- c(0.1,0.2,0.4,0.6,0.8,1,1.5,2,2.5,3)
+  k.shift <- c(0.5,1,2)
+  param.space <- expand.grid(mu=mu.shift,k=k.shift)
+  trt.name<-apply(param.space,1,function(param.vec){
+    param.vec <- param.vec
+    paste("mu",param.vec["mu"],"k",param.vec["k"],sep="")
+  }
+                  )
+  param.space["mu"]<-param.space["mu"]*params.rainfall["mu"]
+  param.space["k"]<-param.space["k"]*params.rainfall["k"]
+  
+  param.space.list <- split(param.space,list(1:nrow(param.space)))
+
+  treatments <- lapply(param.space.list,FUN=function(param.vec)
+                      integerized(
+                        mean.dist=param.vec[["mu"]],
+                        k=param.vec[["k"]]
+                        )
+                      )
+  
+  ## some of these are too long!  it seems to be the result of a weird
+  ## quirk in the rounding when there is very high mu and very small k
+  ## the error adds a single extra zero.
+  ## this little bit of code here deletes the last zero in all vectors
+  ## which are 'too long'.
+  too.long <- which(sapply(treatments,length)>60)
+  for(k in too.long){
+    zero <- max(which(treatments[[k]]==0))
+    treatments[[k]] <- treatments[[k]][-zero]
+  }                 
+
+
+trt.list.freqs <- lapply(treatments,make.points)
+n.rainy.days <- sapply(trt.list.freqs,nrow)
+
+param.space.label <- expand.grid(mu=as.character(mu.shift),k=as.character(k.shift))
+
+trt.rainfalls <- data.frame(mu=rep(param.space.label[["mu"]],n.rainy.days),
+                            k=rep(param.space.label[["k"]],n.rainy.days),
+                            trt.name=rep(trt.name,n.rainy.days),
+                            do.call(rbind,trt.list.freqs)
+                            )
+
+ggplot(trt.rainfalls,aes(x=amount,y=frequency,group=trt.name))+geom_point()+geom_path()+facet_grid(mu~k)
+```
+Each panel represents the distribution of days within one treatment (bromeliad).  Rows are variation in the *mu* parameter, while columns are *k*.  These are the treatments which we decided on as a group: increases & decreases in the two parameters of the distribution. 
+
+## patterning the rainfall appropriately
+```{r fig.cap="",message=FALSE}
+  schedname <- paste(datapath,"/",site,"schedule.csv",sep="")
+  schedule <- read.csv(schedname,na.strings=c("NA","sample","insects"),
+                       stringsAsFactors=FALSE)
+melted.schedule <- melt(data=schedule,id.vars=names(schedule)[1:4])
+
+test <- reshape(data=schedule,varying=names(schedule)[5:72],direction="long")
+
+test2 <- test[order(test$mu,test$k,test$time),]
+
+ggplot(data=test2,aes(x=time,y=day,group=trt.name))+geom_path()+facet_grid(mu~k)
+```
+The temporal pattern of rain in each bromeliad -- equal to the previous figure but with the addition of a sequence of rainfall that approximates the variation natural to the site.
+
+## Temporal patterns determined in this way are indistinguishable from nature
+```{r fig.cap="The control treatment bromeliad (i.e. *mu1k1*, black line) compared with the rainfall data, to demonstrate that they are very similar in temporal pattern"}
+raw.schedules <- data.frame(day=rep(1:60,times=ncol(rainfall.data)),melt(rainfall.data))
+names(raw.schedules) <- c("day","year","mm")
+
+control.only <- test2[test2$trt.name=="mu1k1",c("time","trt.name","day")]
+names(control.only) <- c("day","year","mm")
+
+also.control <- rbind(control.only,raw.schedules)
+
+ggplot(data=subset(also.control,also.control$year!="mu1k1"),
+       aes(x=day,y=mm,colour=year))+geom_path()+
+  geom_path(data=subset(also.control,also.control$year=="mu1k1"),colour='black')
+
+```
+
+```{r fig.cap="As the above, but each year (and the control plant) is in a separate panel."}
+ggplot(data=also.control,aes(x=day,y=mm))+geom_path()+facet_wrap(~year)
+
+```
+

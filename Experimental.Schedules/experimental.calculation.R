@@ -9,9 +9,9 @@ library("bbmle")
 ##library("multicore")
 ## read in data
 
-## Before running this code, ensure that the working directory is the parent directory 
-## .Rscripts (containing precipitation.functions.R) should be a subdirectory, and other folders
-## named after the fieldsites ('Cardoso', 'FrenchGuiana' etc) should be inside Experimental.Schedules.
+## Before running this code, ensure that the working directory is Experimental.Schedules.  The
+## .Rscripts (containing precipitation.functions.R) directory, and other folders
+## named after the fieldsites ('Cardoso', 'FrenchGuiana' etc) should be inside ../
 
 ## these fieldsite folders can have any number of files that you need,
 ## but should have one and only one file of rainfall data, named
@@ -19,12 +19,15 @@ library("bbmle")
 ## years as columns, 60 rows (representing consecutive days)
 
 ### THERE SHOULD BE NO ROW NUMBERS in the input file. BE CAREFUL!
-#rainfall(Times=50,where="Colombia")
+rainfall(Times=50,site="Argentina")
 ## this will print a file named after the fieldsite, AND the computer
 ## on which it was run!
 
 ## print the schedule
-graph.print(sim.data="Cardoso.sim.crunch01.zulu.Rdata",site="Cardoso")
+sched.print(sim.data="Argentina.sim.ardea.Rdata",site="Argentina")
+
+## run diagnostics
+diagnostic.plots(sim.data="Argentina.sim.ardea.Rdata",site="Argentina")
 
 ## note two VERY IMPORTANT THINGS:
 ## 1. there is no check that the temporal blocks will be unique to a

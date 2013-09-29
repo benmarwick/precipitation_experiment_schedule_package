@@ -9,9 +9,9 @@ library("bbmle")
 ##library("multicore")
 ## read in data
 
-## This code should be run in a directory with one folder called
-## .Rscripts (containing precipitation.functions.R) and other folders
-## named after the fieldsites ('Cardoso', 'FrenchGuiana' etc)
+## Before running this code, ensure that the working directory is the parent directory 
+## .Rscripts (containing precipitation.functions.R) should be a subdirectory, and other folders
+## named after the fieldsites ('Cardoso', 'FrenchGuiana' etc) should be inside Experimental.Schedules.
 
 ## these fieldsite folders can have any number of files that you need,
 ## but should have one and only one file of rainfall data, named
@@ -22,8 +22,6 @@ library("bbmle")
 #rainfall(Times=50,where="Colombia")
 ## this will print a file named after the fieldsite, AND the computer
 ## on which it was run!
-
-## NOTE for CR this is not the case anymore:
 
 ## print the schedule
 graph.print(sim.data="Cardoso.sim.crunch01.zulu.Rdata",site="Cardoso")

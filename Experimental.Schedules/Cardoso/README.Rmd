@@ -6,7 +6,7 @@ library(ggplot2)
 library(reshape)
 dirstring <- strsplit(getwd(),"/",)
 site <- dirstring[[1]][length(unlist(dirstring))]
-opts_chunk$set(warning=FALSE,message=FALSE,echo=FALSE, dev="png",fig.path=paste0("figure/",site))
+opts_chunk$set(warning=FALSE,message=FALSE,echo=FALSE, dev="png")#fig.path=paste0("figure/",site))
 ```
 
 # Precipitation manipulation experiments -- diagnostics and illustrations

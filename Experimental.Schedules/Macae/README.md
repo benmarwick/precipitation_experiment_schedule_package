@@ -40,17 +40,9 @@ The above figure shows that the resulting integers are OK (not perfect) at fitti
 Each panel represents the distribution of days within one treatment (bromeliad).  Rows are variation in the *mu* parameter, while columns are *k*.  These are the treatments which we decided on as a group: increases & decreases in the two parameters of the distribution. 
 
 ## patterning the rainfall appropriately
-![](figure/unnamed-chunk-6.png) 
-
-The temporal pattern of rain in each bromeliad -- equal to the previous figure but with the addition of a sequence of rainfall that approximates the variation natural to the site.
-
-## Temporal patterns determined in this way are indistinguishable from nature
-
-We were very concerned, at the beginning of the experiment, to create a sequence of rainfall events which resembled each site's natural pattern.  In this section, the actual rainfall data is compared to the 'control' treatment (mu1k1), in which the parameters are equal to the average of their annual values from the observed data.  Hopefully, you can see no differences between this treatment and the others.
-
-![The control treatment bromeliad (i.e. *mu1k1*, black line) compared with the rainfall data, to demonstrate that they are very similar in temporal pattern](figure/unnamed-chunk-7.png) 
 
 
-![As the above, but each year (and the control plant) is in a separate panel.](figure/unnamed-chunk-8.png) 
+
+
 
 

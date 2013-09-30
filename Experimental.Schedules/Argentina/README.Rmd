@@ -172,11 +172,10 @@ schedule <- read.csv(schedname,na.strings=c("NA","sample","insects"),
                      stringsAsFactors=FALSE)
 melted.schedule <- melt(data=schedule,id.vars=names(schedule)[1:4])
 
-test <- reshape(data=schedule,varying=names(schedule)[5:72],direction="long")
+melted.schedule$Day <- as.numeric(gsub(melted.schedule$variable,pattern="[a-zA-Z]+",replacement=""))
 
-test2 <- test[order(test$mu,test$k,test$time),]
+ggplot(melted.schedule)+facet_grid(intended.mu~intended.k)+geom_path(aes(x=Day,y=value))+ylab("precipitation (mm)")
 
-ggplot(data=test2,aes(x=time,y=day,group=trt.name))+geom_path()+facet_grid(mu~k)
 ```
 The temporal pattern of rain in each bromeliad -- equal to the previous figure but with the addition of a sequence of rainfall that approximates the variation natural to the site.
 
@@ -188,7 +187,7 @@ We were very concerned, at the beginning of the experiment, to create a sequence
 raw.schedules <- data.frame(day=rep(1:60,times=ncol(rainfall.data)),melt(rainfall.data))
 names(raw.schedules) <- c("day","year","mm")
 
-control.only <- test2[test2$trt.name=="mu1k1",c("time","trt.name","day")]
+control.only <- melted.schedule[melted.schedule$trt.name=="mu1k1",c("Day","trt.name","value")]
 names(control.only) <- c("day","year","mm")
 
 also.control <- rbind(control.only,raw.schedules)

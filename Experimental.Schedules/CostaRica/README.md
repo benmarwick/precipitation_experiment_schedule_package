@@ -42,15 +42,7 @@ Each panel represents the distribution of days within one treatment (bromeliad).
 ## patterning the rainfall appropriately
 
 ```
-## Error: cannot open the connection
-```
-
-```
-## Error: object 'schedule' not found
-```
-
-```
-## Error: object 'schedule' not found
+## Error: failed to guess time-varying variables from their names
 ```
 
 ```
@@ -64,6 +56,9 @@ Each panel represents the distribution of days within one treatment (bromeliad).
 The temporal pattern of rain in each bromeliad -- equal to the previous figure but with the addition of a sequence of rainfall that approximates the variation natural to the site.
 
 ## Temporal patterns determined in this way are indistinguishable from nature
+
+We were very concerned, at the beginning of the experiment, to create a sequence of rainfall events which resembled each site's natural pattern.  In this section, the actual rainfall data is compared to the 'control' treatment (mu1k1), in which the parameters are equal to the average of their annual values from the observed data.  Hopefully, you can see no differences between this treatment and the others.
+
 
 ```
 ## Error: object 'test2' not found

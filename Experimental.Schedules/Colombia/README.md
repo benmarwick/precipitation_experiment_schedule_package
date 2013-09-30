@@ -45,6 +45,9 @@ Each panel represents the distribution of days within one treatment (bromeliad).
 The temporal pattern of rain in each bromeliad -- equal to the previous figure but with the addition of a sequence of rainfall that approximates the variation natural to the site.
 
 ## Temporal patterns determined in this way are indistinguishable from nature
+
+We were very concerned, at the beginning of the experiment, to create a sequence of rainfall events which resembled each site's natural pattern.  In this section, the actual rainfall data is compared to the 'control' treatment (mu1k1), in which the parameters are equal to the average of their annual values from the observed data.  Hopefully, you can see no differences between this treatment and the others.
+
 ![The control treatment bromeliad (i.e. *mu1k1*, black line) compared with the rainfall data, to demonstrate that they are very similar in temporal pattern](figure/unnamed-chunk-7.png) 
 
 

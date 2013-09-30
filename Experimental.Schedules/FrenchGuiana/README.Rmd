@@ -166,9 +166,10 @@ Each panel represents the distribution of days within one treatment (bromeliad).
 
 ## patterning the rainfall appropriately
 ```{r fig.cap="",message=FALSE}
-  schedname <- paste(datapath,"/",site,"schedule.csv",sep="")
-  schedule <- read.csv(schedname,na.strings=c("NA","sample","insects"),
-                       stringsAsFactors=FALSE)
+schedname <- paste(datapath,"/",site,"schedule.csv",sep="")
+if (!exists(schedname)){ schedname <- list.files(pattern="chedule.csv",full.names=TRUE)}
+schedule <- read.csv(schedname,na.strings=c("NA","sample","insects"),
+                     stringsAsFactors=FALSE)
 melted.schedule <- melt(data=schedule,id.vars=names(schedule)[1:4])
 
 test <- reshape(data=schedule,varying=names(schedule)[5:72],direction="long")
@@ -180,6 +181,9 @@ ggplot(data=test2,aes(x=time,y=day,group=trt.name))+geom_path()+facet_grid(mu~k)
 The temporal pattern of rain in each bromeliad -- equal to the previous figure but with the addition of a sequence of rainfall that approximates the variation natural to the site.
 
 ## Temporal patterns determined in this way are indistinguishable from nature
+
+We were very concerned, at the beginning of the experiment, to create a sequence of rainfall events which resembled each site's natural pattern.  In this section, the actual rainfall data is compared to the 'control' treatment (mu1k1), in which the parameters are equal to the average of their annual values from the observed data.  Hopefully, you can see no differences between this treatment and the others.
+
 ```{r fig.cap="The control treatment bromeliad (i.e. *mu1k1*, black line) compared with the rainfall data, to demonstrate that they are very similar in temporal pattern"}
 raw.schedules <- data.frame(day=rep(1:60,times=ncol(rainfall.data)),melt(rainfall.data))
 names(raw.schedules) <- c("day","year","mm")

@@ -172,9 +172,9 @@ schedule <- read.csv(schedname,na.strings=c("NA","sample","insects"),
                      stringsAsFactors=FALSE)
 melted.schedule <- melt(data=schedule,id.vars=names(schedule)[1:4])
 
-melted.schedule$Day <- as.numeric(gsub(melted.schedule$variable,pattern="[a-zA-Z]+",replacement=""))
+melted.schedule$Day <- as.numeric(gsub(melted.schedule$variable,pattern="day.",replacement=""))
 
-ggplot(melted.schedule)+facet_grid(intended.mu~intended.k)+geom_path(aes(x=Day,y=value))+ylab("precipitation (mm)")
+ggplot(melted.schedule)+geom_path(aes(x=Day,y=value))+ylab("precipitation (mm)")+facet_grid(mu~k)
 
 ```
 The temporal pattern of rain in each bromeliad -- equal to the previous figure but with the addition of a sequence of rainfall that approximates the variation natural to the site.

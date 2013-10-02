@@ -172,7 +172,10 @@ schedule <- read.csv(schedname,na.strings=c("NA","sample","insects"),
                      stringsAsFactors=FALSE)
 melted.schedule <- melt(data=schedule,id.vars=names(schedule)[1:4])
 
-melted.schedule$Day <- as.numeric(gsub(melted.schedule$variable,pattern="day.",replacement=""))
+melted.schedule$Day <- as.numeric(gsub(melted.schedule$variable,pattern="[a-zA-Z]+\\.?",replacement=""))
+
+names(melted.schedule)[2] <- "mu"
+names(melted.schedule)[3] <- "k"
 
 ggplot(melted.schedule)+geom_path(aes(x=Day,y=value))+ylab("precipitation (mm)")+facet_grid(mu~k)
 

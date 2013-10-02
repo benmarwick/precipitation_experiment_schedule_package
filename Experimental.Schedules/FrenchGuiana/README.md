@@ -40,10 +40,7 @@ The above figure shows that the resulting integers are OK (not perfect) at fitti
 Each panel represents the distribution of days within one treatment (bromeliad).  Rows are variation in the *mu* parameter, while columns are *k*.  These are the treatments which we decided on as a group: increases & decreases in the two parameters of the distribution. 
 
 ## patterning the rainfall appropriately
-
-```
-## Error: At least one layer must contain all variables used for facetting
-```
+![](figure/unnamed-chunk-6.png) 
 
 The temporal pattern of rain in each bromeliad -- equal to the previous figure but with the addition of a sequence of rainfall that approximates the variation natural to the site.
 

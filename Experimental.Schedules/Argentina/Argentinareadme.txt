@@ -1,5 +1,5 @@
 [1] "readme file for the experimental schedule from Argentina"
-[1] "calculated on 2013-09-29"
+[1] "calculated on 2013-10-02"
 [1] "parameter estimates by year"
         Year1      Year2      Year3      Year4      Year5      Year6      Year7      Year8      Year9    Year10
 mu 4.78074781 2.63346170 5.06655308 3.39997568 2.19904015 3.13340295 6.47158058 3.56665764 4.88323418 8.8513793
@@ -10,5 +10,5 @@ k  0.06555107 0.03204174 0.05355132 0.05871665 0.03969068 0.03650811 0.06581069 
        Year22     Year23     Year24     Year25     Year26     Year27
 mu 3.25002159 4.46109837 3.89998244 2.49971617 8.30243177 1.48332912
 k  0.03741412 0.02886114 0.05481918 0.04065605 0.08994691 0.03366041
-[1] "it was selected from 5000 simulations"
+[1] "it was selected from 50 simulations"
 [1] "further diagnostics can be found in /diagnostics"

@@ -685,3 +685,104 @@ parameter.value.comparison <- function(){
              xlab = "parameter value",main="Value of mu")
   dev.off()
 }
+
+schedule_corrector <- function(sim.data="Argentina.sim.ardea.Rdata",site="Argentina"){
+  ## site is the name of the folder that has data for that site.
+  datapath <- file.path("../Experimental.Schedules",site)
+  #diagnostic.dir <- file.path(datapath,"diagnostics")
+  #dir.create(diagnostic.dir)
+  
+  ## graph all the schedules
+  ## clever trick -- reading it in and calling the NA strings "NA",
+  ## "sample" and "insects"
+  schedname <- paste(datapath,"/",site,"schedule.csv",sep="")
+  schedule <- read.csv(schedname,na.strings=c("NA","sample","insects"),
+                       stringsAsFactors=FALSE)
+  
+  ## get the columns that contain watering days
+  watering.days <- grepl(x=names(schedule),pattern="day.{2,3}")
+  ## divide into different days
+  watering.day.list <-
+    split(schedule[,watering.days],1:nrow(schedule))
+  names(watering.day.list) <- schedule$trt.name
+  ## remove all NA values
+  watering.day.list.narm <- lapply(watering.day.list,
+                                   function(x) x[!is.na(x)])
+  ## then drop first and last (control median and treatment median,
+  ## respectively) to get the 'treatment' watering days.
+  watering.day.treatments <- lapply(watering.day.list.narm,
+                                    function(x) x[-c(1,length(x))])
+  
+  realized.params <- lapply(watering.day.treatments,nbin.estimate)
+  realized.params <- do.call(rbind,realized.params)
+  realized.params <- data.frame(realized.params)
+  
+  intended.water <- schedule[["mu"]]*60
+  experimental.water <- sapply(watering.day.treatments,sum)
+  problem_water <- (intended.water-experimental.water)/intended.water
+  mean_problem <- tapply(problem_water,schedule[["k"]],mean)
+  correct_prop <- mean_problem[which.max(mean_problem)]
+  correct_where <- names(mean_problem)[which.max(mean_problem)]
+  rows_to_correct <- which(schedule[["k"]]==correct_where)
+  watering.day.treatments[rows_to_correct] <- lapply(watering.day.treatments[rows_to_correct],function(x) x*correct_prop+x)
+  precip.amt <- do.call(rbind,watering.day.treatments)
+  
+  ## copied from line 292
+  
+  ## combine the treatments
+  precip.amt.round <- round(precip.amt,digits=2)
+  
+  
+  
+  ## treatment medians
+  trt.med <- apply(precip.amt.round,1,median)
+  ## overall median
+  overall <- trt.med[which(names(trt.med)=="mu1k1")]
+  ## one day grace
+  preday <- matrix(data="sample",nrow=30,ncol=1)
+  postday1 <- matrix(data="sample",nrow=30,ncol=1)
+  postday2 <- matrix(data=NA,nrow=30,ncol=1)
+  destruct.samp <-  matrix(data="insects",nrow=30,ncol=1)
+  ## NOTE that precip.amt.round contains ALL THE NUMBERS prescribed by
+  ## the distribution's parameters.  All other numbers are added to
+  ## standardize experimental units (treatment medians, overall
+  ## medians, etc)
+  ## stick 'em all together
+  new.trt <- cbind(overall,preday,precip.amt.round,
+                   trt.med,postday1,postday2,destruct.samp)
+  
+  
+  
+  ## a lookup list that transforms groups to numbers of days to shift
+  ## in time
+  lkup <- list(a=0,b=1,c=2)
+  #look 'em up:
+  shifts <- sapply(schedule[["temporal.block"]],function(s) lkup[[s]])
+
+  
+  ## new.trt has both NA and numerical, so this is everything:
+  ss <-  matrix(c(row(new.trt), col(new.trt)), ncol = 2)
+  ## make a new matrix to put the shifted numbers in.
+  ## use NA (default), since we want to separate days that have no
+  ## treatment from those with zeros:
+  final <- matrix(nrow=30,ncol=ncol(new.trt)+2)
+  ## subscripts in this format are 1:nrow (first column) 65 times, and repeated
+  ## numbers (second column: 30 1s, then 30 2s, etc) -- these
+  ## represent the columns.  so
+  ## we can repeat the shifts 65 times:
+  ss.f <- ss
+  ss.f[,2] <- ss[,2]+rep(shifts,ncol(new.trt))
+  final[ss.f] <- new.trt[ss]
+  
+
+  final.df<-data.frame(final)
+  names(final.df)<-paste("day",1:68,sep=".")
+  
+  corrected_schedule <- data.frame(schedule[!watering.days],final.df)
+  schedname <- paste(datapath,"/",site,"schedule.csv",sep="")
+  write.csv(corrected_schedule,file=schedname,row.names=FALSE)
+  uncorrected_schedname <- paste(datapath,"/",site,"schedule_UNCORRECTED.csv",sep="")
+  write.csv(schedule,file=uncorrected_schedname,row.names=FALSE)
+  
+}
+

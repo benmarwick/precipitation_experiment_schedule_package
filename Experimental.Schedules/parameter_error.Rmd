@@ -116,13 +116,6 @@ ggplot(comparison,aes(x=amount,y=frequency,colour=origin,))+geom_point()+geom_li
 ```
 Seems to be the increasing tail.
 
-## what can we do?
-
-### ignore the problem
-
-### alter the parameters
-
-### edit the data afterwards
-
+So, what can we do?  The exponential shape of the curve caused by changes in k suggests that multiplying by some rate might work.
 
 

@@ -109,6 +109,45 @@ ggplot(successful2, aes(x = Size, y = (before - after)/before, group = Mu, colou
 
 Now we can set a threshold: values of k lower than 0.04 will cause a more than 10% change in mu, independent of the values of mu.
 
+What happened to the water?
 
+
+```r
+make.points <- function(one.year.data) {
+    freqs <- as.numeric(table(one.year.data))
+    rainfalls <- sort(unique(one.year.data))
+    data.frame(amount = rainfalls, frequency = freqs)
+    # one.yr.data <- data.frame(rainfalls=rainfalls,freqs=as.numeric(freqs))
+    # one.yr.data <- one.yr.data[order(one.yr.data$rainfalls),]
+    # with(one.yr.data,lines(rainfalls,freqs))
+}
+
+
+rain_comp <- function(Size = 0.08, Mu = 20, n.data = 6, duration) {
+    # browser()
+    params.rainfall_df <- data.frame(param = c("k", "mu"), value = c(Size, Mu))
+    ## use these average parameter estimates to calculate the 'new data', derived
+    ## from the probability density function
+    new.data <- integerized(mean.dist = Mu, k = Size)
+    
+    rainfall.probs <- sapply(0:max(new.data), dnbinom, mu = Mu, size = Size)
+    
+    rainfall.pred.model <- rbind(data.frame(origin = "model", amount = 0:max(new.data), 
+        frequency = rainfall.probs * 60), data.frame(origin = "after", make.points(new.data)))
+    
+    data.frame(k = Size, rainfall.pred.model)
+    
+}
+
+comparison <- do.call(rbind, lapply(seq(0.02, 0.07, length.out = 10), rain_comp))
+ggplot(comparison, aes(x = amount, y = frequency, colour = origin, )) + geom_point() + 
+    geom_line() + facet_wrap(~k) + scale_y_log10()
+```
+
+![plot of chunk unnamed-chunk-3](figure/unnamed-chunk-3.png) 
+
+Seems to be the increasing tail.
+
+So, what can we do?  The exponential shape of the curve caused by changes in k suggests that multiplying by some rate might work.
 
 

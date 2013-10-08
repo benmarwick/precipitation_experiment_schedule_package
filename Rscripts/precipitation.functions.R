@@ -686,7 +686,7 @@ parameter.value.comparison <- function(){
   dev.off()
 }
 
-schedule_corrector <- function(sim.data="Argentina.sim.ardea.Rdata",site="Argentina"){
+schedule_corrector <- function(sim.data,site){
   ## site is the name of the folder that has data for that site.
   datapath <- file.path("../Experimental.Schedules",site)
   #diagnostic.dir <- file.path(datapath,"diagnostics")

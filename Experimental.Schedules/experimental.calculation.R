@@ -24,10 +24,14 @@ rainfall(Times=50,site="Argentina")
 ## on which it was run!
 
 ## print the schedule
-sched.print(sim.data="Argentina.sim.ardea.Rdata",site="Argentina")
+sched.print(sim.data="Argentina.sim.spider01.zulu.Rdata",site="Argentina")
+
+## correct Argentina
+schedule_corrector(sim.data="Argentina.sim.spider01.zulu.Rdata",site="Argentina")
+
 
 ## run diagnostics
-diagnostic.plots(sim.data="Argentina.sim.ardea.Rdata",site="Argentina")
+diagnostic.plots(sim.data="Argentina.sim.spider01.zulu.Rdata",site="Argentina")
 
 ## note two VERY IMPORTANT THINGS:
 ## 1. there is no check that the temporal blocks will be unique to a

@@ -692,7 +692,6 @@ schedule_corrector <- function(sim.data,site){
   #diagnostic.dir <- file.path(datapath,"diagnostics")
   #dir.create(diagnostic.dir)
   
-  ## graph all the schedules
   ## clever trick -- reading it in and calling the NA strings "NA",
   ## "sample" and "insects"
   schedname <- paste(datapath,"/",site,"schedule.csv",sep="")
@@ -700,8 +699,9 @@ schedule_corrector <- function(sim.data,site){
                        stringsAsFactors=FALSE)
   
   ## get the columns that contain watering days
+  ## note that this will only work on later-made schedules which have columns matching that pattern
   watering.days <- grepl(x=names(schedule),pattern="day.{2,3}")
-  ## divide into different days
+  ## divide into different bromeliads (treatments)
   watering.day.list <-
     split(schedule[,watering.days],1:nrow(schedule))
   names(watering.day.list) <- schedule$trt.name
@@ -712,10 +712,6 @@ schedule_corrector <- function(sim.data,site){
   ## respectively) to get the 'treatment' watering days.
   watering.day.treatments <- lapply(watering.day.list.narm,
                                     function(x) x[-c(1,length(x))])
-  
-  realized.params <- lapply(watering.day.treatments,nbin.estimate)
-  realized.params <- do.call(rbind,realized.params)
-  realized.params <- data.frame(realized.params)
   
   intended.water <- schedule[["mu"]]*60
   experimental.water <- sapply(watering.day.treatments,sum)
@@ -733,7 +729,7 @@ schedule_corrector <- function(sim.data,site){
   precip.amt.round <- round(precip.amt,digits=2)
   
   
-  
+  browser()
   ## treatment medians
   trt.med <- apply(precip.amt.round,1,median)
   ## overall median

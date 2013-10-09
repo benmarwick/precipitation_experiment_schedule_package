@@ -27,8 +27,7 @@ rainfall(Times=50,site="Argentina")
 sched.print(sim.data="Argentina.sim.spider01.zulu.Rdata",site="Argentina")
 
 ## correct Argentina
-schedule_corrector(sim.data="Argentina.sim.spider01.zulu.Rdata",site="Argentina")
-
+schedule_corrector(sim.data="Argentina.sim.spider01.zulu.Rdata",site="Argentina",final_constant=TRUE)
 
 ## run diagnostics
 diagnostic.plots(sim.data="Argentina.sim.spider01.zulu.Rdata",site="Argentina")

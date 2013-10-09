@@ -686,7 +686,7 @@ parameter.value.comparison <- function(){
   dev.off()
 }
 
-schedule_corrector <- function(sim.data,site){
+schedule_corrector <- function(sim.data,site,remove_zero_median=TRUE,final_constant=FALSE){
   ## site is the name of the folder that has data for that site.
   datapath <- file.path("../Experimental.Schedules",site)
   #diagnostic.dir <- file.path(datapath,"diagnostics")
@@ -713,6 +713,7 @@ schedule_corrector <- function(sim.data,site){
   watering.day.treatments <- lapply(watering.day.list.narm,
                                     function(x) x[-c(1,length(x))])
   
+  ### the following is for fixing the schedule when the rainfall amounts are very low and k is below 0.04:
   intended.water <- schedule[["mu"]]*60
   experimental.water <- sapply(watering.day.treatments,sum)
   problem_water <- (intended.water-experimental.water)/intended.water
@@ -727,13 +728,16 @@ schedule_corrector <- function(sim.data,site){
   
   ## combine the treatments
   precip.amt.round <- round(precip.amt,digits=2)
+
   
-  
- # browser()
+  #browser()
   ## treatment medians
   trt.med <- apply(precip.amt.round,1,median)
   ## overall median
   overall <- trt.med[which(names(trt.med)=="mu1k1")]
+  if(overall == 0 && remove_zero_median) overall  <- "fill"
+  if(max(trt.med) == 0 && remove_zero_median) trt.med <- apply(precip.amt.round,1,function(x) round(mean(x),digits=2))
+  if(final_constant) trt.med <- trt.med[which(names(trt.med)=="mu1k1")]
   ## one day grace
   preday <- matrix(data="sample",nrow=30,ncol=1)
   postday1 <- matrix(data="sample",nrow=30,ncol=1)

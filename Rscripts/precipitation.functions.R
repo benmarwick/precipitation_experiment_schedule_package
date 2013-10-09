@@ -729,7 +729,7 @@ schedule_corrector <- function(sim.data,site){
   precip.amt.round <- round(precip.amt,digits=2)
   
   
-  browser()
+ # browser()
   ## treatment medians
   trt.med <- apply(precip.amt.round,1,median)
   ## overall median

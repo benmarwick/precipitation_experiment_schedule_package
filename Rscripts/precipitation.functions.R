@@ -781,7 +781,7 @@ schedule_corrector <- function(sim.data,site,remove_zero_median=TRUE,final_const
   corrected_schedule <- data.frame(schedule[!watering.days],final.df)
   schedname <- paste(datapath,"/",site,"schedule.csv",sep="")
   write.csv(corrected_schedule,file=schedname,row.names=FALSE)
-  uncorrected_schedname <- paste(datapath,"/",site,"schedule_UNCORRECTED.csv",sep="")
+  uncorrected_schedname <- paste(datapath,"/",site,"schedule_UNCORRECTED",".csv",sep="")
   write.csv(schedule,file=uncorrected_schedname,row.names=FALSE)
   
 }

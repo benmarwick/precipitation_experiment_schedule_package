@@ -5,65 +5,72 @@
 ## first read in all data:
 
 library(plyr)
-sites <- c("Cardoso","Colombia","CostaRica","FrenchGuiana","Macae")
+library(reshape2)
+library(ggplot2)
+source("../Rscripts/all_sites_parameters.R")
 
-scheduleread <- function(x){
-  path <- file.path(getwd(),"Experimental.Schedules",x)
-  filepath <- list.files(path=path,pattern="schedule.csv",full.names=TRUE)
-  read.csv(filepath,na.strings=c("NA","insects","sample"))
-}
+```
 
+```{r }
+sites <- c("Cardoso","Colombia","CostaRica","FrenchGuiana","Macae","Argentina")
 
 all_schedules <- lapply(sites,scheduleread)
 names(x=all_schedules) <- sites
 
-analyzeNumbers <- function(x){
-  numeric_names <- grepl(pattern=".[0-9]",x=names(x))
-  mean_rain <- apply(X=x[,numeric_names],MARGIN=1,mean,na.rm=TRUE)
-  data.frame(x[,!numeric_names],meanwater=mean_rain)
-}
+## standardize names
+all_schedules_renamed <- lapply(all_schedules,function(df){
+  names(df)[1:4] <- c("trt.name","mu","k","temporal.block")
+  df
+  })
 
-## using ddply
-meltByName <- function(x){
-  numeric_names <- grepl(pattern=".[0-9]",x=names(x))
-  melt(data=x,id.vars=names(x)[!numeric_names])
-}
-# melt first
-library(reshape2)
-all_sched_melt <- lapply(all_schedules,meltByName)
-# then wrap ddply in ldply
+allsites <- ldply(.data=all_schedules_renamed,.fun=melt,id.vars=c("trt.name","mu","k","temporal.block"))
+names(allsites)[names(allsites)==".id"] <- "site"
 
-trt_summaries <- function(df){
-  ddply(.data=df,.variables=.(trt.name),
-        summarize,
-        ## any summary statistic you like can go right here.
-        meanrain=mean(value,na.rm=TRUE),
-        n_zero=sum(value==0,na.rm=TRUE),
-        n_overflow=sum(value>300,na.rm=TRUE)
-  )
-}
+```
 
-ldply(.data=all_sched_melt,.fun=trt_summaries)
 
-## next step: extract interesting infos from each line:
-## is there any reason why sticking them all together would be bad?
-do.call(rbind,all_schedules)
+```{r preliminary graph}
+#ggplot(allsites,aes(x=site,y=mu))+geom_point()
+#ggplot(allsites,aes(x=site,y=k))+geom_point()
+ggplot(subset(allsites,subset=allsites$trt.name=="mu1k1"),aes(x=mu,y=k,colour=site))+geom_point(size=3)
 
-sapply(all_schedules,ncol)
-sites
+trtcols <- dcast(data=allsites,formula=site+temporal.block+variable~trt.name,value.var="value")
 
-str(all_schedules[[1]])
-lapply(all_schedules,names)
 
-lapply(all_schedules,function(x){
-  unique(x[,grepl("mu",names(x))])
-}
-)
+```
 
-lapply(all_schedules,
-       function(x){
-         unique(x[,grepl('\\.k|^k$',names(x))])
-       }
-)
 
+```{r clean}
+head(allsites)
+unique(allsites$variable)
+allsites$Day <- as.numeric(gsub(allsites$variable,pattern="[a-zA-Z]+\\.?",replacement=""))
+ggplot(allsites,aes(x=Day,y=value,group=trt.name))+geom_path()+facet_wrap(~site)
+
+## remove the temporal block days:
+# 
+# tmpblock_sites <- split(allsites,allsites$temporal.block)
+# 
+# no_extra_days <- rbind(tmpblock_sites$a[!tmpblock_sites$a$Day%in%c(1:2,63:68),],
+#                        tmpblock_sites$b[!tmpblock_sites$b$Day%in%c(1:3,64:68),],
+#                        tmpblock_sites$c[!tmpblock_sites$c$Day%in%c(1:4,65:68),])
+# 
+# no_extra_days[which(is.na(no_extra_days$value)),]
+#ggplot(allsites,aes(x=Day,y=value,group=trt.name))+geom_path()+facet_grid(~mu)
+
+allsites_noNA <- allsites[!is.na(allsites$value),]
+
+#ddply(allsites_noNA,.variables=.(sites),summarize,m)
+```
+
+```{r}
+
+summary_sites <- ddply(allsites_noNA,.variables=.(site,trt.name),.fun=summarize,
+                       maxrain=max(value),
+                       drydays=sum(value==0)
+                       )
+
+```
+
+```{r graph summaries}
+ggplot(summary_sites,aes(x=drydays,colour=site))+geom_density()+xlab("number of dry days")
 ```

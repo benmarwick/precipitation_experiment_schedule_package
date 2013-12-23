@@ -1,8 +1,8 @@
 
 scheduleread <- function(x){
-  path <- file.path(getwd(),"Experimental.Schedules",x)
+  path <- file.path("../Experimental.Schedules",x)
   filepath <- list.files(path=path,pattern="schedule.csv",full.names=TRUE)
-  read.csv(filepath,na.strings=c("NA","insects","sample"))
+  read.csv(filepath,na.strings=c("NA","insects","sample","fill"))
 }
 
 analyzeNumbers <- function(x){

@@ -19,18 +19,18 @@ library("bbmle")
 ## years as columns, 60 rows (representing consecutive days)
 
 ### THERE SHOULD BE NO ROW NUMBERS in the input file. BE CAREFUL!
-rainfall(Times=50,site="PuertoRico")
+rainfall(Times=5000,site="PuertoRico")
 ## this will print a file named after the fieldsite, AND the computer
 ## on which it was run!
 
 ## print the schedule
-sched.print(sim.data="PuertoRico.sim.spider01.zulu.Rdata",site="PuertoRico")
+sched.print(sim.data="PuertoRico.sim.ardea.Rdata",site="PuertoRico")
 
 ## correct Argentina
 #schedule_corrector(sim.data="Argentina.sim.spider01.zulu.Rdata",site="Argentina",remove_zero_median=TRUE,final_constant=TRUE)
 
 ## run diagnostics
-diagnostic.plots(sim.data="PuertoRico.sim.spider01.zulu.Rdata",site="PuertoRico")
+diagnostic.plots(sim.data="PuertoRico.sim.ardea.Rdata",site="PuertoRico")
 
 ## note two VERY IMPORTANT THINGS:
 ## 1. there is no check that the temporal blocks will be unique to a

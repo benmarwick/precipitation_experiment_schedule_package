@@ -1,6 +1,6 @@
-## comparison of the different sites 
+# comparison of the different sites 
 
-```{r start}
+```{r start, echo=FALSE}
 ## code for calculating site characteristics
 ## first read in all data:
 
@@ -8,11 +8,13 @@ library(plyr)
 library(reshape2)
 library(ggplot2)
 source("../Rscripts/all_sites_parameters.R")
+opts_chunk$set(warning=FALSE,message=FALSE,echo=FALSE, dev="png")
 
 ```
 
+
 ```{r }
-sites <- c("Cardoso","Colombia","CostaRica","FrenchGuiana","Macae","Argentina")
+sites <- c("Cardoso","Colombia","CostaRica","FrenchGuiana","Macae","Argentina","PuertoRico")
 
 all_schedules <- lapply(sites,scheduleread)
 names(x=all_schedules) <- sites
@@ -28,7 +30,7 @@ names(allsites)[names(allsites)==".id"] <- "site"
 
 ```
 
-
+By graphing the control (mu1k1) treatments, we can compare the amount (_mu_) and the variation in rainfall (_k_) across all sites:
 ```{r preliminary graph}
 #ggplot(allsites,aes(x=site,y=mu))+geom_point()
 #ggplot(allsites,aes(x=site,y=k))+geom_point()
@@ -39,10 +41,8 @@ trtcols <- dcast(data=allsites,formula=site+temporal.block+variable~trt.name,val
 
 ```
 
-
+We can get another look at the same data by graphing the amount of rain over time for all treatments at all sites.  Each figure is a fieldsite; each has 30 lines showing the water amounts added to every bromeliad over time.
 ```{r clean}
-head(allsites)
-unique(allsites$variable)
 allsites$Day <- as.numeric(gsub(allsites$variable,pattern="[a-zA-Z]+\\.?",replacement=""))
 ggplot(allsites,aes(x=Day,y=value,group=trt.name))+geom_path()+facet_wrap(~site)
 
@@ -70,6 +70,9 @@ summary_sites <- ddply(allsites_noNA,.variables=.(site,trt.name),.fun=summarize,
                        )
 
 ```
+
+The number of dry days in a treatment depends on both mu and k.  Some analyses have suggested that the number of dry days is useful for predicting community responses to the treatments.  So, how does each fieldsite differ in the number of dry days per treatment?  Each density plot has n=30 (one for every bromeliad in each treatment)
+
 
 ```{r graph summaries}
 ggplot(summary_sites,aes(x=drydays,colour=site))+geom_density()+xlab("number of dry days")

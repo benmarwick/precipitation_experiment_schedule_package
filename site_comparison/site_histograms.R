@@ -1,5 +1,6 @@
 library(dplyr)
 library(tidyr)
+library(ggplot2)
 
 sitenames <- c("Argentina","Cardoso","Colombia",
                "FrenchGuiana","Macae","PuertoRico", "CostaRica")
@@ -17,7 +18,10 @@ pdf("sitehists.pdf")
 for (i in sitenames) {
   p <- sitedata %>% 
     filter(sites == i) %>% 
-    ggplot(aes(x = ppt)) + geom_histogram(binwidth = 3) + facet_wrap( ~ year)
+    ggplot(aes(x = ppt)) + 
+    geom_histogram(binwidth = 3) + 
+    facet_wrap( ~ year) +
+    ggtitle(i)
   print(p) 
 }
 dev.off()

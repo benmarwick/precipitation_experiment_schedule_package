@@ -28,7 +28,14 @@ Rscript -e "library(knitr); knit(input='README.Rmd',output='README.md')"
 #~/.cabal/bin/pandoc -s -S README.md -o README.pdf --latex-engine=xelatex
 cd ../../Rscripts
 
-
+# copy explanation.Rmd to readme
+cp explanation.Rmd ../Experimental.Schedules/PuertoRico/README.Rmd
+# knit
+cd ../Experimental.Schedules/PuertoRico/
+Rscript -e "library(knitr); knit(input='README.Rmd',output='README.md')"
+#pandoc
+#~/.cabal/bin/pandoc -s -S README.md -o README.pdf --latex-engine=xelatex
+cd ../../Rscripts
 
 
 # copy explanation.Rmd to readme

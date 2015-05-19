@@ -25,3 +25,27 @@ for (i in sitenames) {
   print(p) 
 }
 dev.off()
+
+selected <- data_frame(sites = c("Argentina","Cardoso","Colombia",
+                         "FrenchGuiana","Macae","PuertoRico", "CostaRica"),
+                       year = c("Year24", "year2008", "X2004", "yr2006","X2006","X2008","X2001"))
+
+sitedata %>% 
+  semi_join(selected) %>% 
+  ggplot(aes(x = ppt)) + 
+  geom_histogram(binwidth = 3) + 
+  facet_wrap( ~ sites)
+
+ggsave("allsites.png")
+
+for (i in sitenames) {
+  sitedata %>% 
+    semi_join(selected) %>% 
+    filter(sites == i) %>% 
+    ggplot(aes(x = ppt)) + 
+    geom_histogram(binwidth = 3) + 
+    ylim(0,50) + xlim(0,100) +
+    ggtitle(i)
+  ggsave(paste0(i, ".png"))
+}
+

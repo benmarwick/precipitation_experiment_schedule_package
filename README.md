@@ -1,3 +1,5 @@
+[![DOI](https://zenodo.org/badge/doi/10.5281/zenodo.18548.svg)](http://dx.doi.org/10.5281/zenodo.18548)
+
 ## Introduction
 
 This repository contains code to create an experimental design for the [Bromeliad Working Group (BWG)](http://www.zoology.ubc.ca/~srivast/bwg/). Bromeliads are flowering plants native to the Neotropics. These plants collect rainwater in their leaves; this rainwater forms the habitat for a diverse community of invertebrates. This tiny ecological community depends entirely on that rainwater. But rain will change with the world's changing climate: becoming more or less intense, and/or falling in heavier storms than normal. How will these changes affect the structure and function of the bromeliad food web?

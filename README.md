@@ -1,7 +1,32 @@
+## Introduction
+
+This repository contains code to create an experimental design for the [Bromeliad Working Group (BWG)](http://www.zoology.ubc.ca/~srivast/bwg/). Bromeliads are flowering plants native to the Neotropics. These plants collect rainwater in their leaves; this rainwater forms the habitat for a diverse community of invertebrates. This tiny ecological community depends entirely on that rainwater. But rain will change with the world's changing climate: becoming more or less intense, and/or falling in heavier storms than normal. How will these changes affect the structure and function of the bromeliad food web?
+
+The BWG conducted a field experiment manipulating both the amount and distribution of rainfall reaching bromeliads. We replicated this experiment in seven countries, each with its own community of invertebrates and its own rainfall regiem. In order to manipulate the amount and distribution of rainfall independently, we wrote code which
+
+* fits a statistical distribution to observed rainfall data
+* modifies the parameters of this distribution in a factorial combination
+* approximates these distributions within the 60-day time limit of the experiment, giving the number of dry days and rainy days (and the amount of rain on each)
+* finally, arranges these rainy and dry days into a "plausible" natural sequence. 
+
+The following links contain an illustrated detailed description of this algorithim as applied to each experimental site. Below is a guide to the resulting schedules themselves (intended for use by the different fieldsite teams). 
+
+* [Argentina](Experimental.Schedules/Argentina/README.md)
+* [Cardoso](Experimental.Schedules/Cardoso/README.md)
+* [Colombia](Experimental.Schedules/Colombia/README.md)
+* [CostaRica](Experimental.Schedules/CostaRica/README.md)
+* [FrenchGuiana](Experimental.Schedules/FrenchGuiana/README.md)
+* [Macae](Experimental.Schedules/Macae/README.md)
+* [PuertoRico](Experimental.Schedules/PuertoRico/README.md)
+
+For a discussion of the challenges in fitting extreme values of parameters, see [here](Experimental.Schedules/parameter_error.md)
+
+## guide to the schedules
+
 This is a quick guide to the precipitation experiment schedule file.
 Files will be named FIELDSITEschedule.csv, where FIELDSITE will be
 replaced with the name of your country or site (e.g.
-Cardososchedule.csv, FrenchGuianaschedule.cv) The description follows
+Cardososchedule.csv, FrenchGuianaschedule.csv) The description follows
 every column name:
 
 **trt.name** = treatment name, following the naming convention suggested
@@ -69,3 +94,7 @@ Thus the full treatment period takes **68 days**.
 
 Note that the NA days at the end (i.e. on days 67 or 68) are simply
 included to keep the schedule looking “square”.
+
+## Licence
+
+We release the code in this repository under the MIT software license. see text of license [here](LICENSE)

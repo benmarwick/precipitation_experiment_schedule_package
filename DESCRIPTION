@@ -1,0 +1,17 @@
+Package: test
+Type: Package
+Title: Test.
+Description: test.
+Version: 0.0.1.9000
+License: MIT + file LICENSE
+Authors@R: c(person("Ben", "Marwick", role = c("aut", "cre"), email = "benmarwick@gmail.com"))
+URL: https://github.com/benmarwick
+BugReports: benmarwick@gmail.com
+LazyData: TRUE
+Imports:
+ bbmle,
+ scales,
+ ggplot2,
+ grid
+Suggests: knitr
+VignetteBuilder: knitr

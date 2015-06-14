@@ -1,0 +1,7 @@
+one more thing to do: come up with a way (and probably copy-and-paste
+is the best!) to save the temporal groups.  A run of graph.print
+should give the same answer every time once a suitable combination has
+been found.
+
+so in otherwords, go there, check if a combination exists, and use it
+if so.

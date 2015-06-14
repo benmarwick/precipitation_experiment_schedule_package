@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<!-- saved from url=(0014)about:internet -->
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+
+<title>Precipitation manipulation experiments &ndash; diagnostics and illustrations</title>
+
+<style type="text/css">
+body, td {
+   font-family: sans-serif;
+   background-color: white;
+   font-size: 12px;
+   margin: 8px;
+}
+
+tt, code, pre {
+   font-family: 'DejaVu Sans Mono', 'Droid Sans Mono', 'Lucida Console', Consolas, Monaco, monospace;
+}
+
+h1 { 
+   font-size:2.2em; 
+}
+
+h2 { 
+   font-size:1.8em; 
+}
+
+h3 { 
+   font-size:1.4em; 
+}
+
+h4 { 
+   font-size:1.0em; 
+}
+
+h5 { 
+   font-size:0.9em; 
+}
+
+h6 { 
+   font-size:0.8em; 
+}
+
+a:visited {
+   color: rgb(50%, 0%, 50%);
+}
+
+pre {	
+   margin-top: 0;
+   max-width: 95%;
+   border: 1px solid #ccc;
+   white-space: pre-wrap;
+}
+
+pre code {
+   display: block; padding: 0.5em;
+}
+
+code.r, code.cpp {
+   background-color: #F8F8F8;
+}
+
+table, td, th {
+  border: none;
+}
+
+blockquote {
+   color:#666666;
+   margin:0;
+   padding-left: 1em;
+   border-left: 0.5em #EEE solid;
+}
+
+hr {
+   height: 0px;
+   border-bottom: none;
+   border-top-width: thin;
+   border-top-style: dotted;
+   border-top-color: #999999;
+}
+
+@media print {
+   * { 
+      background: transparent !important; 
+      color: black !important; 
+      filter:none !important; 
+      -ms-filter: none !important; 
+   }
+
+   body { 
+      font-size:12pt; 
+      max-width:100%; 
+   }
+       
+   a, a:visited { 
+      text-decoration: underline; 
+   }
+
+   hr { 
+      visibility: hidden;
+      page-break-before: always;
+   }
+
+   pre, blockquote { 
+      padding-right: 1em; 
+      page-break-inside: avoid; 
+   }
+
+   tr, img { 
+      page-break-inside: avoid; 
+   }
+
+   img { 
+      max-width: 100% !important; 
+   }
+
+   @page :left { 
+      margin: 15mm 20mm 15mm 10mm; 
+   }
+     
+   @page :right { 
+      margin: 15mm 10mm 15mm 20mm; 
+   }
+
+   p, h2, h3 { 
+      orphans: 3; widows: 3; 
+   }
+
+   h2, h3 { 
+      page-break-after: avoid; 
+   }
+}
+
+</style>
+
+
+
+
+
+</head>
+
+<body>
+<pre><code>## Warning: cannot open file &#39;../../Rscripts/precipitation.functions.R&#39;: No
+## such file or directory
+</code></pre>
+
+<pre><code>## Error: cannot open the connection
+</code></pre>
+
+<h1>Precipitation manipulation experiments &ndash; diagnostics and illustrations</h1>
+
+<p><strong>This document is for Rscripts</strong></p>
+
+<p>The schedule for the precipitation experiment is based on rainfall data for our local sites.  This document will illustrate the process of calculating schedules from rainfall data.  A modified version of this document could be a useful supplementary material for our eventual papers.  In the meantime it will help us understand how the code works in the first place.</p>
+
+<pre><code>Error: There is no folder with that name!
+</code></pre>
+
+<pre><code>Error: cannot open the connection
+</code></pre>
+
+<pre><code>Error: object &#39;rainfall.data&#39; not found
+</code></pre>
+
+<pre><code>Error: object &#39;nbin.estimate&#39; not found
+</code></pre>
+
+<pre><code>Error: object &#39;yearly.params&#39; not found
+</code></pre>
+
+<h2>Fitting the Negative Binomial distribution to raw rainfall data</h2>
+
+<pre><code>## Error: could not find function &quot;integerized&quot;
+</code></pre>
+
+<pre><code>## Error: object &#39;rainfall.data&#39; not found
+</code></pre>
+
+<pre><code>## Error: object &#39;rainfall.data&#39; not found
+</code></pre>
+
+<pre><code>## Error: object &#39;rainfall.data&#39; not found
+</code></pre>
+
+<pre><code>## Error: object &#39;rainfall.points.list&#39; not found
+</code></pre>
+
+<pre><code>## Error: object &#39;rainfall.pred.model&#39; not found
+</code></pre>
+
+<pre><code>## Error: object &#39;rainfall.pred.model&#39; not found
+</code></pre>
+
+<p>This graph shows the frequency distribution of rainfall amounts for all the years in the data you submitted.  Rainfall amount is on the x-axis (in millimeters) and the number of days is on the y-axis.  </p>
+
+<p>We fit a Negative Binomial distribution to this data.  This is a several-step process:</p>
+
+<ol>
+<li>Round rainfall amounts to integers</li>
+<li>Estimate <em>mu</em> and <em>k</em> for each year of the dataset using maximum likelihood</li>
+<li>average these parameters to produce the &ldquo;average distribution&rdquo;</li>
+</ol>
+
+<p>This average distribution is shown in black against all the raw data, which is shown in colour.  You can see that it fits rather well &ndash; except for the long tail, which predicts &lt;1 day for many of the large rainfall amounts.</p>
+
+<h2>&ldquo;integerizing&rdquo; the distribution.</h2>
+
+<pre><code>## Error: object &#39;rainfall.pred.model&#39; not found
+</code></pre>
+
+<p>This figure shows the negative binomial prediction (as above).  However, it cannot be used directly because it predicts non-integer frequencies for each rainfall amount (and of course we cannot water for a non-integer number of days!).  We came up with an &#39;integerization&#39; algorithim which approximates this smooth line with the discrete points shown here. The algorithim works like this: when we round the non-integer frequencies of rainfall amounts to round numbers, we either increase or decrease by a small amount (&lt;1).  We add together the &ldquo;leftovers&rdquo;, until we get a quantity equal to one.  We multiply each &ldquo;leftover&rdquo; by its rainfall amount, and add them together.  </p>
+
+<p>The above figure shows that the resulting integers are OK (not perfect) at fitting the nice, smooth negative binomial line.</p>
+
+<h2>altering the parameters &ndash; applying the experimental treatment</h2>
+
+<pre><code>## Error: object &#39;params.rainfall&#39; not found
+</code></pre>
+
+<pre><code>## Error: object &#39;params.rainfall&#39; not found
+</code></pre>
+
+<pre><code>## Error: could not find function &quot;integerized&quot;
+</code></pre>
+
+<pre><code>## Error: object &#39;treatments&#39; not found
+</code></pre>
+
+<pre><code>## Error: object &#39;too.long&#39; not found
+</code></pre>
+
+<pre><code>## Error: object &#39;treatments&#39; not found
+</code></pre>
+
+<pre><code>## Error: object &#39;trt.list.freqs&#39; not found
+</code></pre>
+
+<pre><code>## Error: object &#39;n.rainy.days&#39; not found
+</code></pre>
+
+<pre><code>## Error: object &#39;trt.rainfalls&#39; not found
+</code></pre>
+
+<p>Each panel represents the distribution of days within one treatment (bromeliad).  Rows are variation in the <em>mu</em> parameter, while columns are <em>k</em>.  These are the treatments which we decided on as a group: increases &amp; decreases in the two parameters of the distribution. </p>
+
+<h2>patterning the rainfall appropriately</h2>
+
+<pre><code>## Error: invalid &#39;description&#39; argument
+</code></pre>
+
+<pre><code>## Error: object &#39;schedule&#39; not found
+</code></pre>
+
+<pre><code>## Error: object &#39;melted.schedule&#39; not found
+</code></pre>
+
+<pre><code>## Error: object &#39;melted.schedule&#39; not found
+</code></pre>
+
+<p>The temporal pattern of rain in each bromeliad &ndash; equal to the previous figure but with the addition of a sequence of rainfall that approximates the variation natural to the site.</p>
+
+<h2>Temporal patterns determined in this way are indistinguishable from nature</h2>
+
+<p>We were very concerned, at the beginning of the experiment, to create a sequence of rainfall events which resembled each site&#39;s natural pattern.  In this section, the actual rainfall data is compared to the &#39;control&#39; treatment (mu1k1), in which the parameters are equal to the average of their annual values from the observed data.  Hopefully, you can see no differences between this treatment and the others.</p>
+
+<pre><code>## Error: object &#39;rainfall.data&#39; not found
+</code></pre>
+
+<pre><code>## Error: object &#39;raw.schedules&#39; not found
+</code></pre>
+
+<pre><code>## Error: object &#39;melted.schedule&#39; not found
+</code></pre>
+
+<pre><code>## Error: object &#39;control.only&#39; not found
+</code></pre>
+
+<pre><code>## Error: object &#39;control.only&#39; not found
+</code></pre>
+
+<pre><code>## Error: object &#39;also.control&#39; not found
+</code></pre>
+
+<pre><code>## Error: object &#39;also.control&#39; not found
+</code></pre>
+
+</body>
+
+</html>
+
